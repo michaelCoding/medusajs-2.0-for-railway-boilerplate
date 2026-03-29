@@ -1,3 +1,13 @@
+/* Light/dark theme applied via next-themes class strategy */
+html.light,
+html:not(.dark) {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
@@ -63,27 +73,27 @@
   }
 
   .text-small-regular {
-    @apply text-xs leading-5 font-normal;
+    @apply text-sm leading-5 font-normal;
   }
 
   .text-small-semi {
-    @apply text-xs leading-5 font-semibold;
+    @apply text-sm leading-5 font-semibold;
   }
 
   .text-base-regular {
-    @apply text-sm leading-6 font-normal;
+    @apply text-md leading-6 font-normal;
   }
 
   .text-base-semi {
-    @apply text-sm leading-6 font-semibold;
+    @apply text-md leading-6 font-semibold;
   }
 
   .text-large-regular {
-    @apply text-base leading-6 font-normal;
+    @apply text-lg leading-6 font-normal;
   }
 
   .text-large-semi {
-    @apply text-base leading-6 font-semibold;
+    @apply text-lg leading-6 font-semibold;
   }
 
   .text-xl-regular {

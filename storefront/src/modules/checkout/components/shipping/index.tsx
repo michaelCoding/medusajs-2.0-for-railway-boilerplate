@@ -60,7 +60,7 @@ const Shipping: React.FC<ShippingProps> = ({
   }, [isOpen])
 
   return (
-    <div className="bg-white">
+    <div className="bg-primary">
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"
@@ -116,7 +116,7 @@ const Shipping: React.FC<ShippingProps> = ({
                       />
                       <span className="text-base-regular">{option.name}</span>
                     </div>
-                    <span className="justify-self-end text-ui-fg-base">
+                    <span className="justify-self-end text-basic-primary">
                       {convertToLocale({
                         amount: option.amount!,
                         currency_code: cart?.currency_code,
@@ -149,10 +149,10 @@ const Shipping: React.FC<ShippingProps> = ({
           <div className="text-small-regular">
             {cart && (cart.shipping_methods?.length ?? 0) > 0 && (
               <div className="flex flex-col w-1/3">
-                <Text className="txt-medium-plus text-ui-fg-base mb-1">
+                <Text className="txt-medium-plus text-basic-primary mb-1">
                   Method
                 </Text>
-                <Text className="txt-medium text-ui-fg-subtle">
+                <Text className="txt-medium text-secondary">
                   {selectedShippingMethod?.name}{" "}
                   {convertToLocale({
                     amount: selectedShippingMethod?.amount!,

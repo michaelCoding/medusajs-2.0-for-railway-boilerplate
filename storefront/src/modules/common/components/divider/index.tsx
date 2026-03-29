@@ -1,9 +1,16 @@
-import { clx } from "@medusajs/ui"
+import React from 'react'
+import { cn } from '@lib/util/cn'
 
-const Divider = ({ className }: { className?: string }) => (
-  <div
-    className={clx("h-px w-full border-b border-gray-200 mt-1", className)}
+export const Divider = React.forwardRef<
+  HTMLHRElement,
+  React.HTMLAttributes<HTMLHRElement>
+>(({ className, ...props }, ref) => (
+  <hr
+    ref={ref}
+    className={cn('border-t border-basic-primary', className)}
+    {...props}
   />
-)
+))
+Divider.displayName = 'Divider'
 
 export default Divider
