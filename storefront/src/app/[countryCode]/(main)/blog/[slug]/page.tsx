@@ -3,11 +3,9 @@ import { notFound } from 'next/navigation'
 import { getAllPosts, getPostBySlug } from '@lib/data/blog'
 import BlogDetailTemplate from '@modules/blog/templates/blog-detail'
 
-type Props = { params: Promise<{ slug: string; countryCode: string }> }
+export const dynamic = 'force-dynamic'
 
-export async function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }))
-}
+type Props = { params: Promise<{ slug: string; countryCode: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
