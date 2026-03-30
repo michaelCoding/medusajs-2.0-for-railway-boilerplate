@@ -1,5 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
-import { notFound } from "next/navigation"
+
 import { NextRequest, NextResponse } from "next/server"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
@@ -30,7 +30,7 @@ async function getRegionMap() {
     }).then((res) => res.json())
 
     if (!regions?.length) {
-      notFound()
+      return regionMapCache.regionMap
     }
 
     // Create a map of country codes to regions.
@@ -98,6 +98,10 @@ export async function middleware(request: NextRequest) {
   const regionMap = await getRegionMap()
 
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
+
+  if (!countryCode) {
+    return NextResponse.next()
+  }
 
   const urlHasCountryCode =
     countryCode && request.nextUrl.pathname.split("/")[1].includes(countryCode)
