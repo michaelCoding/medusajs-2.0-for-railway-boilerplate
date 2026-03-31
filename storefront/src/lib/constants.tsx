@@ -1,5 +1,6 @@
 import React from "react"
 import { CreditCard } from "@medusajs/icons"
+import { StoreCollection, StoreProductCategory } from '@medusajs/types'
 
 import Ideal from "@modules/common/icons/ideal"
 import Bancontact from "@modules/common/icons/bancontact"
@@ -65,4 +66,58 @@ export const noDivisionCurrencies = [
   "xag",
   "xdr",
   "xau",
+]
+
+export const createNavigation = (
+  productCategories: StoreProductCategory[],
+  collections?: StoreCollection[]
+) => [
+  {
+    name: 'Shop',
+    handle: '/shop',
+    category_children: productCategories
+      .filter((category) => !category.parent_category)
+      .map((category) => ({
+        name: category.name,
+        type: 'parent_category',
+        handle: `/categories/${category.handle}`,
+        category_children: (category.category_children ?? []).map((sub) => ({
+          name: sub.name,
+          handle: `/categories/${sub.handle}`,
+          icon: null,
+          category_children: null,
+        })),
+      })),
+  },
+  {
+    name: 'Collections',
+    handle: '/shop',
+    category_children: !collections
+      ? null
+      : collections.map((collection) => ({
+          name: collection.title,
+          type: 'collection',
+          handle: `/collections/${collection.handle}`,
+          handle_id: collection.handle,
+          category_children: null,
+        })),
+  },
+  {
+    name: 'Blog',
+    handle: '/blog',
+    category_children: null,
+  },
+]
+
+export const checkoutFooterNavigation = [
+  { title: 'Privacy Policy', href: '/privacy' },
+  { title: 'Terms of Use', href: '/terms' },
+  { title: 'Cookie Policy', href: '/cookies' },
+]
+
+export const passwordRequirements = [
+  'At least 8 characters',
+  'At least one uppercase letter',
+  'At least one lowercase letter',
+  'At least one number',
 ]
