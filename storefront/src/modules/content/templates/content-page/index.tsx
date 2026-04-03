@@ -16,7 +16,7 @@ async function renderMarkdown(content: string) {
 
 export default async function ContentPageTemplate({ slug }: { slug: string }) {
   const page = await getStaticPage(slug)
-  if (!page) notFound()
+  if (!page) return notFound()
 
   const content = await renderMarkdown(page.content)
 
