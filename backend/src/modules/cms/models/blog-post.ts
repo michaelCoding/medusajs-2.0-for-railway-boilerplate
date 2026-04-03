@@ -1,6 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 
-const BlogPost = model.define("blog_post", {
+const BlogPost = model.define("cms_blog_post", {
   id: model.id().primaryKey(),
   title: model.text(),
   slug: model.text().unique(),
