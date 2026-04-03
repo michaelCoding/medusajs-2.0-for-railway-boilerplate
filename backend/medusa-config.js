@@ -1,4 +1,5 @@
 import { loadEnv, Modules, defineConfig } from '@medusajs/utils';
+import CmsModule from "./src/modules/cms"
 import {
   ADMIN_CORS,
   AUTH_CORS,
@@ -132,7 +133,10 @@ const medusaConfig = {
           },
         ],
       },
-    }] : [])
+    }] : []),
+    {
+      resolve: "./src/modules/cms",
+    },
   ],
   plugins: [
   ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
