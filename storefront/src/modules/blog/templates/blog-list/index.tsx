@@ -1,8 +1,8 @@
 import { getAllPosts } from '@lib/data/blog'
 import BlogCard from '@modules/blog/components/blog-card'
 
-export default function BlogListTemplate() {
-  const posts = getAllPosts()
+export default async function BlogListTemplate() {
+  const posts = await getAllPosts()
 
   return (
     <div className="content-container py-12">

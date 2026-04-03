@@ -1,49 +1,41 @@
-import fs from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
-
-const BLOG_DIR = path.join(process.cwd(), 'content/blog')
+// storefront/src/lib/data/blog.ts
+const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
 
 export type BlogPost = {
+  id: string
   slug: string
   title: string
-  date: string
   excerpt: string
-  author: string
+  author: string | null
+  cover_image_url: string | null
+  published_at: string | null
+  date: string  // alias for published_at for backward compat
   content: string
+  tags: string[] | null
 }
 
-export function getAllPosts(): Omit<BlogPost, 'content'>[] {
-  if (!fs.existsSync(BLOG_DIR)) return []
-
-  return fs
-    .readdirSync(BLOG_DIR)
-    .filter((f) => f.endsWith('.mdx'))
-    .map((filename) => {
-      const filepath = path.join(BLOG_DIR, filename)
-      const { data } = matter(fs.readFileSync(filepath, 'utf-8'))
-      return {
-        slug: data.slug || filename.replace('.mdx', ''),
-        title: data.title || '',
-        date: data.date || '',
-        excerpt: data.excerpt || '',
-        author: data.author || '',
-      }
+export async function getAllPosts(): Promise<Omit<BlogPost, "content">[]> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/store/cms/blog-posts`, {
+      next: { tags: ["cms-blog"] },
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    if (!res.ok) return []
+    const { posts } = await res.json()
+    return (posts ?? []).map((p: any) => ({ ...p, date: p.published_at ?? "" }))
+  } catch {
+    return []
+  }
 }
 
-export function getPostBySlug(slug: string): BlogPost | null {
-  const filepath = path.join(BLOG_DIR, `${slug}.mdx`)
-  if (!fs.existsSync(filepath)) return null
-
-  const { data, content } = matter(fs.readFileSync(filepath, 'utf-8'))
-  return {
-    slug,
-    title: data.title || '',
-    date: data.date || '',
-    excerpt: data.excerpt || '',
-    author: data.author || '',
-    content,
+export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/store/cms/blog-posts/${slug}`, {
+      next: { tags: [`cms-blog-${slug}`] },
+    })
+    if (!res.ok) return null
+    const { post } = await res.json()
+    return post ? { ...post, date: post.published_at ?? "" } : null
+  } catch {
+    return null
   }
 }
