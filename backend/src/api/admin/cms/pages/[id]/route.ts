@@ -4,8 +4,12 @@ import CmsModuleService from "../../../../../modules/cms/service"
 
 export async function PUT(req: MedusaRequest<unknown, { id: string }>, res: MedusaResponse) {
   const cmsService: CmsModuleService = req.scope.resolve(CMS_MODULE)
-  const body = req.body as any
-  const page = await cmsService.updateStaticPages({ id: req.params.id, ...body })
+  const body = req.body as Record<string, unknown>
+  const update: Record<string, unknown> = { id: req.params.id }
+  if (body.slug !== undefined) update.slug = body.slug
+  if (body.title !== undefined) update.title = body.title
+  if (body.content !== undefined) update.content = body.content
+  const page = await cmsService.updateStaticPages(update as any)
   res.json({ page })
 }
 
