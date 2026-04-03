@@ -159,3 +159,31 @@ export const updateCustomerAddress = async (
       return { success: false, error: err.toString() }
     })
 }
+
+export async function resetPassword(
+  _currentState: unknown,
+  formData: FormData
+) {
+  const email = formData.get('email') as string
+  const token = formData.get('token') as string
+  const password = formData.get('new_password') as string
+
+  try {
+    await fetch(
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/auth/customer/emailpass/update?token=${token}`,
+      {
+        credentials: 'include',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      }
+    )
+  } catch (error: any) {
+    return error.toString()
+  }
+}

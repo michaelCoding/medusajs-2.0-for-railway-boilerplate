@@ -1,98 +1,230 @@
-"use client"
+'use client'
 
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react"
-import { ArrowRightMini, XMark } from "@medusajs/icons"
-import { Text, clx, useToggleState } from "@medusajs/ui"
+import React, { Fragment, useEffect, useMemo, useState } from 'react'
 
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import CountrySelect from "../country-select"
-import { HttpTypes } from "@medusajs/types"
+import { createNavigation } from '@lib/constants'
+import { StoreCollection, StoreProductCategory } from '@medusajs/types'
+import { Box } from '@modules/common/components/box'
+import { Button } from '@modules/common/components/button'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from '@modules/common/components/dialog'
+import Divider from '@modules/common/components/divider'
+import LocalizedClientLink from '@modules/common/components/localized-client-link'
+import {
+  ArrowLeftIcon,
+  BarsIcon,
+  ChevronRightIcon,
+  XIcon,
+} from '@modules/common/icons'
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 
-const SideMenuItems = {
-  Home: "/",
-  Store: "/store",
-  Search: "/search",
-  Account: "/account",
-  Cart: "/cart",
+interface CategoryItem {
+  name: string
+  handle: string
 }
 
-const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
-  const toggleState = useToggleState()
+const SideMenu = ({
+  productCategories,
+  collections,
+}: {
+  productCategories: StoreProductCategory[]
+  collections: StoreCollection[]
+}) => {
+  const [categoryStack, setCategoryStack] = useState<CategoryItem[]>([])
+  const currentCategory = categoryStack[categoryStack.length - 1] || null
+  const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const navigation = useMemo(
+    () => createNavigation(productCategories, collections),
+    [productCategories, collections]
+  )
+
+  const handleCategoryClick = (category: CategoryItem) => {
+    setCategoryStack([
+      ...categoryStack,
+      { name: category.name, handle: category.handle },
+    ])
+  }
+
+  const handleBack = () => {
+    setCategoryStack(categoryStack.slice(0, -1))
+  }
+
+  const handleOpenDialogChange = (open: boolean) => {
+    setIsOpen(open)
+
+    if (!open) {
+      setCategoryStack([])
+    }
+  }
+
+  const renderCategories = (categories: any[]) => {
+    return categories.map((item, index) => {
+      const hasChildren =
+        item.category_children && item.category_children.length > 0
+
+      const lastCategoryIndex = categories.findLastIndex(
+        (cat) => cat.type === 'parent_category'
+      )
+
+      return (
+        <Fragment key={index}>
+          <Button
+            variant="ghost"
+            className="w-full justify-between"
+            onClick={
+              hasChildren
+                ? () =>
+                    handleCategoryClick({
+                      name: item.name,
+                      handle: item.handle,
+                    })
+                : () => handleOpenDialogChange(false)
+            }
+            asChild={!hasChildren}
+          >
+            {hasChildren ? (
+              <>
+                <span className="flex items-center gap-4">
+                  {item.icon && item.icon}
+                  {item.name}
+                </span>
+                <ChevronRightIcon className="h-5 w-5" />
+              </>
+            ) : (
+              <LocalizedClientLink href={item.handle}>
+                <span className="flex items-center gap-4">
+                  {item.icon && item.icon}
+                  {item.name}
+                </span>
+              </LocalizedClientLink>
+            )}
+          </Button>
+          {index === lastCategoryIndex && (
+            <Divider className="my-4 -ml-4 w-[calc(100%+2rem)]" />
+          )}
+        </Fragment>
+      )
+    })
+  }
+
+  const getActiveCategories = () => {
+    let currentCategories = [
+      ...(navigation[0]?.category_children || []),
+      ...navigation.slice(1),
+    ]
+
+    for (const category of categoryStack) {
+      const found = currentCategories.find(
+        (item) => item.name === category.name
+      )
+      if (found?.category_children) {
+        currentCategories = found.category_children.map((category) => ({
+          ...category,
+          icon: null,
+        }))
+      } else {
+        break
+      }
+    }
+    return currentCategories
+  }
+
+  const shouldRenderButton =
+    !currentCategory || currentCategory.name !== 'Collections'
+
+  // Render a placeholder button during SSR to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <Button
+        variant="icon"
+        withIcon
+        className="flex h-auto !p-2 xsmall:!p-3.5 large:hidden"
+        disabled
+      >
+        <BarsIcon />
+      </Button>
+    )
+  }
 
   return (
-    <div className="h-full">
-      <div className="flex items-center h-full">
-        <Popover className="h-full flex">
-          {({ open, close }) => (
-            <>
-              <div className="relative flex h-full">
-                <PopoverButton
-                  data-testid="nav-menu-button"
-                  className="relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none hover:text-ui-fg-base"
+    <Dialog open={isOpen} onOpenChange={handleOpenDialogChange}>
+      <DialogTrigger asChild>
+        <Button
+          variant="icon"
+          withIcon
+          className="flex h-auto !p-2 xsmall:!p-3.5 large:hidden"
+        >
+          <BarsIcon />
+        </Button>
+      </DialogTrigger>
+      <DialogPortal>
+        <DialogOverlay />
+        <DialogContent
+          className="!max-h-full !max-w-full !rounded-none"
+          aria-describedby={undefined}
+        >
+          <DialogHeader className="flex items-center gap-4 !p-4 text-xl text-basic-primary small:text-2xl">
+            {currentCategory && (
+              <Button variant="tonal" withIcon size="sm" onClick={handleBack}>
+                <ArrowLeftIcon className="h-5 w-5" />
+              </Button>
+            )}
+            {currentCategory?.name || 'Menu'}
+            <Button
+              onClick={() => handleOpenDialogChange(false)}
+              variant="icon"
+              withIcon
+              size="sm"
+              className="ml-auto p-2"
+            >
+              <XIcon />
+            </Button>
+          </DialogHeader>
+          <VisuallyHidden.Root>
+            <DialogTitle>Menu modal</DialogTitle>
+          </VisuallyHidden.Root>
+          <DialogBody className="overflow-y-auto p-4 small:p-5">
+            <Box className="flex flex-col">
+              {shouldRenderButton && (
+                <Button
+                  variant="tonal"
+                  className="mb-4 w-max"
+                  size="sm"
+                  onClick={() => handleOpenDialogChange(false)}
+                  asChild={!!currentCategory}
                 >
-                  Menu
-                </PopoverButton>
-              </div>
-
-              <PopoverPanel
-                transition
-                className="flex flex-col absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-30 inset-x-0 text-sm text-ui-fg-on-color m-2 backdrop-blur-2xl transition ease-out duration-150 data-[closed]:opacity-0 data-[enter]:opacity-100 data-[enter]:backdrop-blur-2xl data-[leave]:ease-in data-[leave]:opacity-0">
-                  <div
-                    data-testid="nav-menu-popup"
-                    className="flex flex-col h-full bg-[rgba(3,7,18,0.5)] rounded-rounded justify-between p-6"
+                  <LocalizedClientLink
+                    href={
+                      currentCategory ? `${currentCategory.handle}` : `/shop`
+                    }
                   >
-                    <div className="flex justify-end" id="xmark">
-                      <button data-testid="close-menu-button" onClick={close}>
-                        <XMark />
-                      </button>
-                    </div>
-                    <ul className="flex flex-col gap-6 items-start justify-start">
-                      {Object.entries(SideMenuItems).map(([name, href]) => {
-                        return (
-                          <li key={name}>
-                            <LocalizedClientLink
-                              href={href}
-                              className="text-3xl leading-10 hover:text-ui-fg-disabled"
-                              onClick={close}
-                              data-testid={`${name.toLowerCase()}-link`}
-                            >
-                              {name}
-                            </LocalizedClientLink>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                    <div className="flex flex-col gap-y-6">
-                      <div
-                        className="flex justify-between"
-                        onMouseEnter={toggleState.open}
-                        onMouseLeave={toggleState.close}
-                      >
-                        {regions && (
-                          <CountrySelect
-                            toggleState={toggleState}
-                            regions={regions}
-                          />
-                        )}
-                        <ArrowRightMini
-                          className={clx(
-                            "transition-transform duration-150",
-                            toggleState.state ? "-rotate-90" : ""
-                          )}
-                        />
-                      </div>
-                      <Text className="flex justify-between txt-compact-small">
-                        © {new Date().getFullYear()} Medusa Store. All rights
-                        reserved.
-                      </Text>
-                    </div>
-                  </div>
-                </PopoverPanel>
-            </>
-          )}
-        </Popover>
-      </div>
-    </div>
+                    Shop all{' '}
+                    {currentCategory && currentCategory.name !== 'Shop'
+                      ? currentCategory.name
+                      : ''}
+                  </LocalizedClientLink>
+                </Button>
+              )}
+              {renderCategories(getActiveCategories())}
+            </Box>
+          </DialogBody>
+        </DialogContent>
+      </DialogPortal>
+    </Dialog>
   )
 }
 

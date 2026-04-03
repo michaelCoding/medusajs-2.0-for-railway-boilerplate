@@ -7,7 +7,7 @@ import { omit } from "lodash"
 import { revalidateTag } from "next/cache"
 import { redirect } from "next/navigation"
 import { getAuthHeaders, getCartId, removeCartId, setCartId } from "./cookies"
-import { getProductsById } from "./products"
+import { getProductByHandle, getProductsById } from "./products"
 import { getRegion } from "./regions"
 
 export async function retrieveCart() {
@@ -395,4 +395,80 @@ export async function updateRegion(countryCode: string, currentPath: string) {
   revalidateTag("products")
 
   redirect(`/${countryCode}${currentPath}`)
+}
+
+export async function addToCartCheapestVariant({
+  productHandle,
+  regionId,
+  countryCode,
+}: {
+  productHandle: string
+  regionId: string
+  countryCode: string
+}) {
+  if (!productHandle || !regionId || !countryCode) {
+    return {
+      success: false,
+      error: 'Missing required parameters',
+    }
+  }
+
+  try {
+    const detailedProduct = await getProductByHandle(productHandle, regionId)
+
+    if (!detailedProduct) {
+      return {
+        success: false,
+        error: 'Product not found',
+      }
+    }
+
+    if (!detailedProduct.variants || detailedProduct.variants.length === 0) {
+      return {
+        success: false,
+        error: 'No variants available',
+      }
+    }
+
+    // Find the cheapest variant
+    const cheapestVariant = detailedProduct.variants.reduce(
+      (cheapest, current) =>
+        (cheapest.calculated_price?.original_amount ?? Infinity) <
+        (current.calculated_price?.original_amount ?? Infinity)
+          ? cheapest
+          : current
+    )
+
+    if ((cheapestVariant.inventory_quantity ?? 0) <= 0) {
+      return {
+        success: false,
+        error: 'Product is out of stock',
+      }
+    }
+
+    if (!cheapestVariant.id) {
+      return {
+        success: false,
+        error: 'Variant ID not found',
+      }
+    }
+
+    await addToCart({
+      variantId: cheapestVariant.id,
+      quantity: 1,
+      countryCode,
+    })
+
+    return {
+      success: true,
+      message: 'Product added to cart',
+    }
+  } catch (error) {
+    console.error('Error adding product to cart:', error)
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : 'An unknown error occurred',
+    }
+  }
 }

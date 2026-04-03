@@ -1,26 +1,59 @@
-import React from 'react'
-import { cn } from '@lib/util/cn'
-import LocalizedClientLink from '@modules/common/components/localized-client-link'
+import { ComponentProps, ReactNode } from 'react'
 
-export interface NavigationItemProps {
-  href: string
-  children: React.ReactNode
+import { cn } from '@lib/util/cn'
+import { Slot } from '@lib/util/slot'
+import { cva, VariantProps } from 'cva'
+
+const NavigationItemVariants = cva({
+  base: 'hover:text-action-primary-hover transition-all duration-200 ease-in-out',
+  variants: {
+    variant: {
+      primary: 'text-lg text-basic-primary',
+      secondary: 'text-md text-secondary',
+    },
+    disabled: {
+      true: 'pointer-events-none text-disabled',
+    },
+  },
+  defaultVariants: {
+    variant: 'primary',
+  },
+})
+
+interface NavigationItemProps
+  extends ComponentProps<'a'>,
+    VariantProps<typeof NavigationItemVariants> {
+  asChild?: boolean
   className?: string
-  'data-testid'?: string
+  children?: ReactNode
 }
 
-export const NavigationItem = React.forwardRef<HTMLAnchorElement, NavigationItemProps>(
-  ({ href, children, className, ...props }, ref) => (
-    <LocalizedClientLink
-      href={href}
-      className={cn(
-        'flex items-center py-3 text-md text-action-primary hover:text-action-primary-hover transition-colors',
-        className
-      )}
+export function NavigationItem({
+  className,
+  children,
+  asChild,
+  disabled,
+  variant,
+  ...props
+}: NavigationItemProps) {
+  const Comp = asChild ? Slot : 'a'
+
+  const disabledProps = disabled
+    ? {
+        'aria-disabled': true as const,
+        tabIndex: -1,
+      }
+    : {}
+
+  return (
+    <Comp
       {...props}
+      {...disabledProps}
+      className={cn(NavigationItemVariants({ variant, disabled }), className)}
     >
       {children}
-    </LocalizedClientLink>
+    </Comp>
   )
-)
+}
+
 NavigationItem.displayName = 'NavigationItem'
