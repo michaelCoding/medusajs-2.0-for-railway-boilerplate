@@ -134,9 +134,7 @@ const medusaConfig = {
         ],
       },
     }] : []),
-    {
-      resolve: "./src/modules/cms",
-    },
+    CmsModule,
   ],
   plugins: [
   ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
