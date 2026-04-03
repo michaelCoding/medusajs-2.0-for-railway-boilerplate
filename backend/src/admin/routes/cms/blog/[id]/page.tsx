@@ -12,6 +12,7 @@ export default function BlogEditPage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(!isNew(id!))
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [coverUrl, setCoverUrl] = useState("")
   const [form, setForm] = useState({
     title: "",
@@ -59,40 +60,60 @@ export default function BlogEditPage() {
     if (!file) return
     const reader = new FileReader()
     reader.onload = async () => {
-      const base64 = (reader.result as string).split(",")[1]
-      const res = await fetch("/admin/cms/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${getToken()}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ filename: file.name, mimeType: file.type, data: base64 }),
-      })
-      const { url } = await res.json()
-      setCoverUrl(url)
-      setForm((prev) => ({ ...prev, cover_image_url: url }))
+      try {
+        const base64 = (reader.result as string).split(",")[1]
+        const res = await fetch("/admin/cms/upload", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${getToken()}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ filename: file.name, mimeType: file.type, data: base64 }),
+        })
+        if (!res.ok) {
+          alert("Image upload failed.")
+          return
+        }
+        const { url } = await res.json()
+        setCoverUrl(url)
+        setForm((prev) => ({ ...prev, cover_image_url: url }))
+      } catch {
+        alert("Image upload failed.")
+      }
     }
     reader.readAsDataURL(file)
   }
 
   const handleSave = async () => {
     setSaving(true)
-    const method = isNew(id!) ? "POST" : "PUT"
-    const url = isNew(id!)
-      ? "/admin/cms/blog-posts"
-      : `/admin/cms/blog-posts/${id}`
+    setSaveError(null)
+    try {
+      const method = isNew(id!) ? "POST" : "PUT"
+      const url = isNew(id!)
+        ? "/admin/cms/blog-posts"
+        : `/admin/cms/blog-posts/${id}`
 
-    await fetch(url, {
-      method,
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    })
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      })
 
-    setSaving(false)
-    navigate("/cms/blog")
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        setSaveError((err as any).message ?? "Save failed.")
+        return
+      }
+
+      navigate("/cms/blog")
+    } catch {
+      setSaveError("Save failed.")
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (loading) return <Container><p>Loading...</p></Container>
@@ -110,6 +131,9 @@ export default function BlogEditPage() {
           </Button>
         </div>
       </div>
+      {saveError && (
+        <p className="text-red-500 text-sm mb-4">{saveError}</p>
+      )}
 
       <div className="flex flex-col gap-4 max-w-2xl">
         <div>

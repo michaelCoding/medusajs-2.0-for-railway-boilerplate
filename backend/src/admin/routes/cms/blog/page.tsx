@@ -15,18 +15,16 @@ const getToken = () =>
   (window as any).__medusa_token__ ?? localStorage.getItem("medusa:token") ?? ""
 
 async function fetchPosts(): Promise<Post[]> {
-  const res = await fetch("/admin/cms/blog-posts", {
-    headers: { Authorization: `Bearer ${getToken()}` },
-  })
-  const data = await res.json()
-  return data.posts ?? []
-}
-
-async function deletePost(id: string) {
-  await fetch(`/admin/cms/blog-posts/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${getToken()}` },
-  })
+  try {
+    const res = await fetch("/admin/cms/blog-posts", {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.posts ?? []
+  } catch {
+    return []
+  }
 }
 
 export default function BlogListPage() {
@@ -35,16 +33,30 @@ export default function BlogListPage() {
 
   const load = async () => {
     setLoading(true)
-    setPosts(await fetchPosts())
-    setLoading(false)
+    try {
+      setPosts(await fetchPosts())
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load() }, [])
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this post?")) return
-    await deletePost(id)
-    await load()
+    try {
+      const res = await fetch(`/admin/cms/blog-posts/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${getToken()}` },
+      })
+      if (!res.ok) {
+        alert("Delete failed.")
+        return
+      }
+      await load()
+    } catch {
+      alert("Delete failed.")
+    }
   }
 
   return (
