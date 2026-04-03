@@ -24,5 +24,10 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     },
   ])
 
+  if (!uploaded) {
+    res.status(500).json({ message: "File upload failed" })
+    return
+  }
+
   res.json({ url: uploaded.url, id: uploaded.id })
 }
