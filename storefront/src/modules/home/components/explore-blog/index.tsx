@@ -1,60 +1,52 @@
-'use client'
-
-import useEmblaCarousel from 'embla-carousel-react'
-import { Box } from '@modules/common/components/box'
-import { Button } from '@modules/common/components/button'
-import { Container } from '@modules/common/components/container'
-import { Heading } from '@modules/common/components/heading'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
 import BlogCard from '@modules/blog/components/blog-card'
+import { ScrollReveal } from '@modules/common/components/scroll-reveal'
 
 type Post = { slug: string; title: string; date: string; excerpt: string; author: string }
 
 export function ExploreBlog({ posts }: { posts: Post[] }) {
-  const [emblaRef] = useEmblaCarousel({ align: 'start', loop: false })
-
   return (
-    <Container className="overflow-hidden">
-      <Box className="flex flex-col gap-6 small:gap-12">
-        <Box className="flex items-center justify-between">
-          <Heading as="h2" className="text-2xl text-basic-primary small:text-3xl">
-            Get inspired
-          </Heading>
-          <Button className="hidden w-max large:flex" variant="tonal" asChild>
-            <LocalizedClientLink href="/blog">Read more</LocalizedClientLink>
-          </Button>
-        </Box>
-        <Box className="hidden items-center gap-2 large:grid large:grid-cols-3">
-          {posts.map((post) => (
+    <section className="content-container py-20 large:py-28">
+      {/* Header */}
+      <div className="flex items-end justify-between mb-12">
+        <div>
+          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-3">Journal</p>
+          <h2 className="font-lora text-4xl large:text-5xl text-[#1C1C1A] -tracking-[0.02em]">
+            Stories &amp; ideas
+          </h2>
+        </div>
+        <LocalizedClientLink
+          href="/blog"
+          className="hidden medium:inline-flex text-xs uppercase tracking-[0.1em] text-[#6B6860] hover:text-[#1C1C1A] transition-colors border-b border-[#6B6860] pb-px"
+        >
+          View all →
+        </LocalizedClientLink>
+      </div>
+
+      {/* Cards grid */}
+      <div className="grid grid-cols-1 medium:grid-cols-3 gap-8 large:gap-12">
+        {posts.map((post, i) => (
+          <ScrollReveal key={post.slug} delay={i * 100}>
             <BlogCard
-              key={post.slug}
               slug={post.slug}
               title={post.title}
               date={post.date}
               excerpt={post.excerpt}
               author={post.author}
             />
-          ))}
-        </Box>
-        <div ref={emblaRef} className="block large:hidden">
-          <Box className="flex gap-2">
-            {posts.map((post) => (
-              <Box key={post.slug} className="flex-[0_0_calc(72.666%-8px)]">
-                <BlogCard
-                  slug={post.slug}
-                  title={post.title}
-                  date={post.date}
-                  excerpt={post.excerpt}
-                  author={post.author}
-                />
-              </Box>
-            ))}
-          </Box>
-        </div>
-        <Button className="mx-auto flex w-max large:hidden" variant="tonal" asChild>
-          <LocalizedClientLink href="/blog">Read more</LocalizedClientLink>
-        </Button>
-      </Box>
-    </Container>
+          </ScrollReveal>
+        ))}
+      </div>
+
+      {/* Mobile view all */}
+      <div className="mt-10 text-center medium:hidden">
+        <LocalizedClientLink
+          href="/blog"
+          className="text-xs uppercase tracking-[0.1em] text-[#6B6860] border-b border-[#6B6860] pb-px"
+        >
+          View all stories →
+        </LocalizedClientLink>
+      </div>
+    </section>
   )
 }
