@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={lora.variable}>
-      <body className="text-basic-primary bg-[#F7F4EF]">
+      <body className="text-basic-primary bg-[var(--scandi-bg)]">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
