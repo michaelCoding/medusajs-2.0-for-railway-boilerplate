@@ -1,14 +1,9 @@
 import { useMemo } from 'react'
-
 import { formatNameForTestId } from '@lib/util/formatNameForTestId'
-import { Badge } from '@modules/common/components/badge'
-import { Box } from '@modules/common/components/box'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
-import { Text } from '@modules/common/components/text'
-
-import { ProductActions } from './action'
 import { LoadingImage } from './loading-image'
 import ProductPrice from './price'
+import { ProductActions } from './action'
 
 export function ProductTile({
   product,
@@ -26,70 +21,45 @@ export function ProductTile({
   regionId: string
 }) {
   const isNew = useMemo(() => {
-    const createdAt = new Date(product.created_at)
-    const currentDate = new Date()
-    const differenceInDays =
-      (currentDate.getTime() - createdAt.getTime()) / (1000 * 3600 * 24)
-
-    return differenceInDays <= 7
+    const days = (Date.now() - new Date(product.created_at).getTime()) / 86400000
+    return days <= 7
   }, [product.created_at])
 
   return (
-    <Box
-      className="group flex h-full flex-col"
+    <div
+      className="group flex flex-col"
       data-testid={formatNameForTestId(`${product.title}-product-tile`)}
     >
-      <Box className="relative h-[290px] small:h-[504px]">
+      {/* Image */}
+      <div className="relative overflow-hidden bg-[#F0EDE6] aspect-[3/4]">
         {isNew && (
-          <Box className="absolute left-3 top-3 z-10 small:left-5 small:top-5">
-            <Badge variant="positive">New product</Badge>
-          </Box>
+          <span className="absolute top-3 left-3 z-10 text-[10px] uppercase tracking-[0.1em] bg-[#7A9E7E] text-white px-2 py-1">
+            New
+          </span>
         )}
         <LocalizedClientLink href={`/products/${product.handle}`}>
           <LoadingImage
             src={product.thumbnail}
             alt={product.title}
             loading="lazy"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         </LocalizedClientLink>
-        <ProductActions productHandle={product.handle} regionId={regionId} />
-      </Box>
-      <ProductInfo
-        productHandle={product.handle}
-        productTitle={product.title}
-        calculatedPrice={product.calculatedPrice}
-        salePrice={product.salePrice}
-      />
-    </Box>
-  )
-}
-
-function ProductInfo({
-  productHandle,
-  productTitle,
-  calculatedPrice,
-  salePrice,
-}: {
-  productHandle: string
-  productTitle: string
-  calculatedPrice: string | null
-  salePrice: string | null
-}) {
-  return (
-    <Box className="flex flex-col gap-3 p-4 small:gap-6 small:p-5">
-      <div className="flex flex-1 flex-col justify-between gap-4">
-        <LocalizedClientLink href={`/products/${productHandle}`}>
-          <Text
-            title={productTitle}
-            as="span"
-            className="line-clamp-2 text-center text-lg text-basic-primary"
-          >
-            {productTitle}
-          </Text>
-        </LocalizedClientLink>
-        <ProductPrice calculatedPrice={calculatedPrice} salePrice={salePrice} />
+        {/* Quick add on hover */}
+        <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-[#1C1C1A]/90">
+          <ProductActions productHandle={product.handle} regionId={regionId} />
+        </div>
       </div>
-    </Box>
+
+      {/* Info */}
+      <div className="pt-4 pb-2">
+        <LocalizedClientLink href={`/products/${product.handle}`}>
+          <p className="text-sm text-[#1C1C1A] leading-snug mb-1 group-hover:text-[#C07B5A] transition-colors duration-200">
+            {product.title}
+          </p>
+        </LocalizedClientLink>
+        <ProductPrice calculatedPrice={product.calculatedPrice} salePrice={product.salePrice} />
+      </div>
+    </div>
   )
 }
