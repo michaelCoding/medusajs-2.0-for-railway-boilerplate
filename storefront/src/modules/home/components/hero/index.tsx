@@ -1,10 +1,5 @@
 import Image from 'next/image'
-import { Box } from '@modules/common/components/box'
-import { Button } from '@modules/common/components/button'
-import { Container } from '@modules/common/components/container'
-import { Heading } from '@modules/common/components/heading'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
-import { Text } from '@modules/common/components/text'
 
 type HeroConfig = {
   headline: string
@@ -15,33 +10,69 @@ type HeroConfig = {
 
 const Hero = ({ data }: { data: HeroConfig }) => {
   return (
-    <>
-      <Box className="h-[168px] max-h-[368px] w-full small:h-[368px] 2xl:h-[468px] 2xl:max-h-[468px]">
-        <Image
-          src={data.image.url}
-          alt={data.image.alt}
-          className="h-full w-full object-cover"
-          width={1000}
-          height={600}
-          priority
-        />
-      </Box>
-      <Container className="flex flex-col gap-2 !py-6 small:gap-8 small:!py-10">
-        <Heading className="max-w-full text-4xl text-basic-primary small:max-w-[510px] medium:text-5xl">
-          {data.headline}
-        </Heading>
-        <Box className="flex flex-col-reverse justify-between gap-8 medium:flex-row medium:items-center">
-          <Button asChild className="w-max">
-            <LocalizedClientLink href={data.cta.link}>
-              {data.cta.text}
-            </LocalizedClientLink>
-          </Button>
-          <Text size="lg" className="max-w-full text-basic-primary medium:max-w-[410px] medium:text-end">
+    <section className="w-full">
+      {/* Desktop: two-column */}
+      <div className="hidden medium:grid medium:grid-cols-[55fr_45fr] min-h-[600px] large:min-h-[700px]">
+        {/* Image column */}
+        <div className="relative overflow-hidden">
+          <Image
+            src={data.image.url}
+            alt={data.image.alt}
+            fill
+            className="object-cover object-center"
+            priority
+          />
+        </div>
+        {/* Text column */}
+        <div className="flex flex-col justify-center px-12 large:px-20 py-16 bg-[var(--scandi-bg)]">
+          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-6">
+            New collection
+          </p>
+          <h1 className="font-lora text-5xl large:text-6xl leading-[1.1] text-[#1C1C1A] mb-8 -tracking-[0.02em]">
+            {data.headline}
+          </h1>
+          <p className="text-base text-[#6B6860] leading-relaxed mb-10 max-w-[340px]">
             {data.text}
-          </Text>
-        </Box>
-      </Container>
-    </>
+          </p>
+          <LocalizedClientLink
+            href={data.cta.link}
+            className="inline-flex w-max border border-[#1C1C1A] px-8 py-3 text-sm uppercase tracking-[0.1em] text-[#1C1C1A] hover:bg-[#1C1C1A] hover:text-[#F7F4EF] transition-colors duration-300"
+          >
+            {data.cta.text}
+          </LocalizedClientLink>
+        </div>
+      </div>
+
+      {/* Mobile: stacked */}
+      <div className="medium:hidden">
+        <div className="relative h-[60vh]">
+          <Image
+            src={data.image.url}
+            alt={data.image.alt}
+            fill
+            className="object-cover object-center"
+            priority
+          />
+        </div>
+        <div className="px-6 py-10 bg-[var(--scandi-bg)]">
+          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-4">
+            New collection
+          </p>
+          <h1 className="font-lora text-4xl leading-[1.15] text-[#1C1C1A] mb-5 -tracking-[0.02em]">
+            {data.headline}
+          </h1>
+          <p className="text-base text-[#6B6860] leading-relaxed mb-8">
+            {data.text}
+          </p>
+          <LocalizedClientLink
+            href={data.cta.link}
+            className="inline-flex w-max border border-[#1C1C1A] px-6 py-3 text-sm uppercase tracking-[0.1em] text-[#1C1C1A]"
+          >
+            {data.cta.text}
+          </LocalizedClientLink>
+        </div>
+      </div>
+    </section>
   )
 }
 
