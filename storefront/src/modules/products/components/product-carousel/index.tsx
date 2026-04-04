@@ -1,18 +1,10 @@
 import { getProductPrice } from '@lib/util/get-product-price'
 import { StoreProduct } from '@medusajs/types'
-import { Box } from '@modules/common/components/box'
-import { Button } from '@modules/common/components/button'
-import { Container } from '@modules/common/components/container'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
-
 import { ProductTile } from '../product-tile'
 import CarouselWrapper from './carousel-wrapper'
 
-interface ViewAllProps {
-  link: string
-  text?: string
-}
-
+interface ViewAllProps { link: string; text?: string }
 interface ProductCarouselProps {
   products: StoreProduct[]
   regionId: string
@@ -21,57 +13,63 @@ interface ProductCarouselProps {
   testId?: string
 }
 
-export function ProductCarousel({
-  products,
-  regionId,
-  title,
-  viewAll,
-  testId,
-}: ProductCarouselProps) {
+export function ProductCarousel({ products, regionId, title, viewAll, testId }: ProductCarouselProps) {
   return (
-    <Container className="overflow-hidden" data-testid={testId}>
-      <Box className="flex flex-col gap-6 small:gap-12">
-        <CarouselWrapper title={title} productsCount={products.length}>
-          <Box className="flex gap-2">
-            {products.map((item, index) => {
-              const cheapestVariant = getProductPrice({
-                product: item,
-              })
-
-              return (
-                <Box
-                  className="flex-[0_0_calc(72.666%-8px)] small:flex-[0_0_calc(62.666%-8px)] medium:flex-[0_0_calc(42.666%-8px)] xl:flex-[0_0_calc(33.333%-8px)] 2xl:flex-[0_0_calc(30.333%-8px)]"
-                  key={index}
-                >
-                  <ProductTile
-                    product={{
-                      id: item.id ?? '',
-                      created_at: item.created_at ?? '',
-                      title: item.title ?? '',
-                      handle: item.handle ?? '',
-                      thumbnail: item.thumbnail ?? null,
-                      calculatedPrice:
-                        cheapestVariant.cheapestPrice?.calculated_price ?? null,
-                      salePrice: cheapestVariant.cheapestPrice?.original_price ?? null,
-                    }}
-                    regionId={regionId}
-                  />
-                </Box>
-              )
-            })}
-          </Box>
-        </CarouselWrapper>
+    <section className="content-container py-20 large:py-28 overflow-hidden" data-testid={testId}>
+      {/* Header */}
+      <div className="flex items-end justify-between mb-10">
+        <h2 className="font-lora italic text-4xl large:text-5xl text-[#1C1C1A] -tracking-[0.02em]">
+          {title}
+        </h2>
         {viewAll && (
-          <Button asChild>
-            <LocalizedClientLink
-              href={viewAll.link}
-              className="mx-auto w-max !px-5 !py-3"
-            >
-              {viewAll.text || 'View all'}
-            </LocalizedClientLink>
-          </Button>
+          <LocalizedClientLink
+            href={viewAll.link}
+            className="hidden medium:inline-flex text-xs uppercase tracking-[0.1em] text-[#6B6860] hover:text-[#1C1C1A] transition-colors border-b border-[#6B6860] pb-px"
+          >
+            {viewAll.text || 'View all'} →
+          </LocalizedClientLink>
         )}
-      </Box>
-    </Container>
+      </div>
+
+      {/* Carousel */}
+      <CarouselWrapper title={title} productsCount={products.length}>
+        <div className="flex gap-4">
+          {products.map((item, index) => {
+            const { cheapestPrice } = getProductPrice({ product: item })
+            return (
+              <div
+                key={index}
+                className="flex-[0_0_calc(75%-16px)] small:flex-[0_0_calc(50%-16px)] medium:flex-[0_0_calc(35%-16px)] xl:flex-[0_0_calc(28%-16px)]"
+              >
+                <ProductTile
+                  product={{
+                    id: item.id ?? '',
+                    created_at: item.created_at ?? '',
+                    title: item.title ?? '',
+                    handle: item.handle ?? '',
+                    thumbnail: item.thumbnail ?? null,
+                    calculatedPrice: cheapestPrice?.calculated_price ?? null,
+                    salePrice: cheapestPrice?.original_price ?? null,
+                  }}
+                  regionId={regionId}
+                />
+              </div>
+            )
+          })}
+        </div>
+      </CarouselWrapper>
+
+      {/* Mobile view all */}
+      {viewAll && (
+        <div className="mt-8 text-center medium:hidden">
+          <LocalizedClientLink
+            href={viewAll.link}
+            className="text-xs uppercase tracking-[0.1em] text-[#6B6860] border-b border-[#6B6860] pb-px"
+          >
+            {viewAll.text || 'View all'} →
+          </LocalizedClientLink>
+        </div>
+      )}
+    </section>
   )
 }
