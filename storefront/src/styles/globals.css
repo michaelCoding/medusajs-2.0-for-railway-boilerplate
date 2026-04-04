@@ -120,3 +120,30 @@ html.dark {
     @apply text-[32px] leading-[44px] font-semibold;
   }
 }
+
+/* ── Scandi Redesign Tokens ─────────────────────── */
+:root {
+  --scandi-bg: #F7F4EF;
+  --scandi-bg-card: #F0EDE6;
+  --scandi-fg: #1C1C1A;
+  --scandi-fg-muted: #6B6860;
+  --scandi-border: #E8E4DC;
+  --scandi-sage: #7A9E7E;
+  --scandi-terra: #C07B5A;
+  --scandi-dark: #1C1C1A;
+}
+
+.font-lora {
+  font-family: var(--font-lora), Georgia, serif;
+}
+
+/* Scroll reveal — start hidden, JS adds .revealed */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
