@@ -31,7 +31,7 @@ export function InlineProductCard({ handle, product: staticProduct }: InlineProd
   return (
     <aside className="my-8 border border-[#E8E4DC] bg-[#F0EDE6] p-4 flex gap-4 items-center not-prose">
       {product.thumbnail && (
-        <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden">
+        <div className="relative w-[120px] h-[120px] flex-shrink-0 overflow-hidden">
           <Image
             src={product.thumbnail}
             alt={product.title}
