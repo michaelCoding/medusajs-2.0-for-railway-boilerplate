@@ -1,7 +1,5 @@
 import { listCategories } from '@lib/data/categories'
 import { getCollectionsList } from '@lib/data/collections'
-import { Container } from '@modules/common/components/container'
-import NavActions from './nav-actions'
 import NavContent from './nav-content'
 
 export default async function NavWrapper({ countryCode }: { countryCode: string }) {
@@ -11,15 +9,14 @@ export default async function NavWrapper({ countryCode }: { countryCode: string 
   ])
 
   return (
-    <nav className="duration-400 sticky top-0 z-50 mx-0 max-w-full border-b border-basic-primary bg-primary transition-all ease-in-out">
-      <Container className="flex items-center justify-between !p-0 medium:!px-14">
+    <nav className="sticky top-0 z-50 w-full border-b border-[#E8E4DC] bg-[var(--scandi-bg)]/90 backdrop-blur-sm transition-all duration-300">
+      <div className="content-container flex items-center justify-between h-16 medium:h-20">
         <NavContent
           productCategories={productCategories ?? []}
           collections={collections ?? []}
           countryCode={countryCode}
         />
-        <NavActions />
-      </Container>
+      </div>
     </nav>
   )
 }
