@@ -38,7 +38,7 @@ export function ProductCarousel({ products, regionId, title, viewAll, testId }: 
             const { cheapestPrice } = getProductPrice({ product: item })
             return (
               <div
-                key={index}
+                key={item.id ?? index}
                 className="flex-[0_0_calc(75%-16px)] small:flex-[0_0_calc(50%-16px)] medium:flex-[0_0_calc(35%-16px)] xl:flex-[0_0_calc(28%-16px)]"
               >
                 <ProductTile
