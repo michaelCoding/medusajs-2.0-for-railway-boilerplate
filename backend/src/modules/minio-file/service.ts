@@ -18,6 +18,7 @@ type InjectedDependencies = {
 
 interface MinioServiceConfig {
   endPoint: string
+  publicEndpoint?: string
   accessKey: string
   secretKey: string
   bucket?: string
@@ -25,6 +26,7 @@ interface MinioServiceConfig {
 
 export interface MinioFileProviderOptions {
   endPoint: string
+  publicEndpoint?: string  // If set, used for public file URLs instead of endPoint
   accessKey: string
   secretKey: string
   bucket?: string
@@ -42,17 +44,17 @@ class MinioFileProviderService extends AbstractFileProviderService {
   protected client: Client
   protected readonly bucket: string
   protected readonly useSSL: boolean
+  protected readonly publicBaseUrl: string
 
   constructor({ logger }: InjectedDependencies, options: MinioFileProviderOptions) {
     super()
     this.logger_ = logger
-    
-    // Parse endpoint to extract hostname and protocol
+
+    // Parse the connection endpoint
     let endPoint = options.endPoint
     let useSSL = true
     let port = 443
-    
-    // Strip protocol if present (MinIO client v8+ requires hostname only)
+
     if (endPoint.startsWith('https://')) {
       endPoint = endPoint.replace('https://', '')
       useSSL = true
@@ -60,30 +62,40 @@ class MinioFileProviderService extends AbstractFileProviderService {
     } else if (endPoint.startsWith('http://')) {
       endPoint = endPoint.replace('http://', '')
       useSSL = false
-      port = 80
+      port = 9000
     }
-    
-    // Remove trailing slash if present
+
     endPoint = endPoint.replace(/\/$/, '')
-    
-    // Extract port from endpoint if specified (e.g., "minio.example.com:9000")
+
     const portMatch = endPoint.match(/:(\d+)$/)
     if (portMatch) {
       port = parseInt(portMatch[1], 10)
       endPoint = endPoint.replace(/:(\d+)$/, '')
     }
-    
+
+    // Parse publicEndpoint for URL generation (falls back to connection endpoint)
+    const rawPublic = options.publicEndpoint ?? options.endPoint
+    const publicProto = rawPublic.startsWith('http://') ? 'http' : 'https'
+    const publicHost = rawPublic
+      .replace(/^https?:\/\//, '')
+      .replace(/\/$/, '')
+      .replace(/:\d+$/, '')  // strip port — standard ports used in URLs
+
     this.config_ = {
-      endPoint: endPoint,
+      endPoint,
+      publicEndpoint: options.publicEndpoint,
       accessKey: options.accessKey,
       secretKey: options.secretKey,
-      bucket: options.bucket
+      bucket: options.bucket,
     }
 
-    // Use provided bucket or default
     this.bucket = this.config_.bucket || DEFAULT_BUCKET
     this.useSSL = useSSL
-    this.logger_.info(`MinIO service initialized with bucket: ${this.bucket}, endpoint: ${endPoint}, port: ${port}, SSL: ${useSSL}`)
+    this.publicBaseUrl = `${publicProto}://${publicHost}`
+
+    this.logger_.info(
+      `MinIO service initialized — bucket: ${this.bucket}, connect: ${endPoint}:${port} (SSL=${useSSL}), publicBase: ${this.publicBaseUrl}`
+    )
 
     // Initialize Minio client with parsed settings
     this.client = new Client({
@@ -101,20 +113,14 @@ class MinioFileProviderService extends AbstractFileProviderService {
   }
 
   static validateOptions(options: Record<string, any>) {
-    const requiredFields = [
-      'endPoint',
-      'accessKey',
-      'secretKey'
-    ]
-
-    requiredFields.forEach((field) => {
+    for (const field of ['endPoint', 'accessKey', 'secretKey']) {
       if (!options[field]) {
         throw new MedusaError(
           MedusaError.Types.INVALID_DATA,
           `${field} is required in the provider's options`
         )
       }
-    })
+    }
   }
 
   private async initializeBucket(): Promise<void> {
@@ -222,9 +228,7 @@ class MinioFileProviderService extends AbstractFileProviderService {
         }
       )
 
-      // Generate URL using the endpoint and bucket with correct protocol
-      const protocol = this.useSSL ? 'https' : 'http'
-      const url = `${protocol}://${this.config_.endPoint}/${this.bucket}/${fileKey}`
+      const url = `${this.publicBaseUrl}/${this.bucket}/${fileKey}`
 
       this.logger_.info(`Successfully uploaded file ${fileKey} to MinIO bucket ${this.bucket}`)
 

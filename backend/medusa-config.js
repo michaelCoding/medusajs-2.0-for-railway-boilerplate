@@ -17,6 +17,7 @@ import {
   STRIPE_WEBHOOK_SECRET,
   WORKER_MODE,
   MINIO_ENDPOINT,
+  MINIO_PUBLIC_ENDPOINT,
   MINIO_ACCESS_KEY,
   MINIO_SECRET_KEY,
   MINIO_BUCKET,
@@ -60,6 +61,7 @@ const medusaConfig = {
             id: 'minio',
             options: {
               endPoint: MINIO_ENDPOINT,
+              ...(MINIO_PUBLIC_ENDPOINT ? { publicEndpoint: MINIO_PUBLIC_ENDPOINT } : {}),
               accessKey: MINIO_ACCESS_KEY,
               secretKey: MINIO_SECRET_KEY,
               bucket: MINIO_BUCKET // Optional, default: medusa-media

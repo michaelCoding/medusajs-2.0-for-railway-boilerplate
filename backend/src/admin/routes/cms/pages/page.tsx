@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Button, Container, Heading, Table, Text } from "@medusajs/ui"
+import CmsNav from "../../../components/cms-nav"
 
 type Page = { id: string; slug: string; title: string }
 
@@ -20,6 +21,7 @@ export default function PagesListPage() {
 
   return (
     <Container>
+      <CmsNav />
       <div className="flex items-center justify-between mb-6">
         <Heading level="h1">Static Pages</Heading>
         <Button asChild size="small"><Link to="/cms/pages/new">New Page</Link></Button>

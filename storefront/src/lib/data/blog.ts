@@ -16,7 +16,7 @@ export type BlogPost = {
 
 export async function getAllPosts(): Promise<Omit<BlogPost, "content">[]> {
   try {
-    const res = await fetch(`${BACKEND_URL}/store/cms/blog-posts`, {
+    const res = await fetch(`${BACKEND_URL}/cms/blog-posts`, {
       next: { tags: ["cms-blog"] },
     })
     if (!res.ok) return []
@@ -29,7 +29,7 @@ export async function getAllPosts(): Promise<Omit<BlogPost, "content">[]> {
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   try {
-    const res = await fetch(`${BACKEND_URL}/store/cms/blog-posts/${slug}`, {
+    const res = await fetch(`${BACKEND_URL}/cms/blog-posts/${slug}`, {
       next: { tags: [`cms-blog-${slug}`] },
     })
     if (!res.ok) return null

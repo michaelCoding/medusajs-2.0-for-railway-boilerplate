@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Button, Container, Heading, Table, Badge, Text } from "@medusajs/ui"
+import CmsNav from "../../../components/cms-nav"
 
 type Post = {
   id: string
@@ -61,6 +62,7 @@ export default function BlogListPage() {
 
   return (
     <Container>
+      <CmsNav />
       <div className="flex items-center justify-between mb-6">
         <Heading level="h1">Blog Posts</Heading>
         <Button asChild size="small">

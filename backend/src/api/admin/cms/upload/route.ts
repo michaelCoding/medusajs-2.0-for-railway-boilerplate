@@ -15,19 +15,24 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return
   }
 
-  const [uploaded] = await fileService.createFiles([
-    {
-      filename,
-      mimeType,
-      content: data,
-      access: "public",
-    },
-  ])
+  try {
+    const [uploaded] = await fileService.createFiles([
+      {
+        filename,
+        mimeType,
+        content: data,
+        access: "public",
+      },
+    ])
 
-  if (!uploaded) {
-    res.status(500).json({ message: "File upload failed" })
-    return
+    if (!uploaded) {
+      res.status(500).json({ message: "File upload failed: no result returned" })
+      return
+    }
+
+    res.json({ url: uploaded.url, id: uploaded.id })
+  } catch (err: any) {
+    console.error("[CMS Upload] fileService.createFiles error:", err?.message ?? err)
+    res.status(500).json({ message: err?.message ?? "File upload failed" })
   }
-
-  res.json({ url: uploaded.url, id: uploaded.id })
 }

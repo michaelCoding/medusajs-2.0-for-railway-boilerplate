@@ -10,7 +10,7 @@ const CmsIndexPage = () => {
 }
 
 export const config = defineRouteConfig({
-  label: "CMS",
+  label: "内容管理",
   icon: ArrowUpRightOnBox,
 })
 

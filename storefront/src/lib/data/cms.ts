@@ -20,7 +20,7 @@ export type StaticPageData = {
 
 export async function getBanner(key: string): Promise<BannerData | null> {
   try {
-    const res = await fetch(`${BACKEND_URL}/store/cms/banners/${key}`, {
+    const res = await fetch(`${BACKEND_URL}/cms/banners/${key}`, {
       next: { tags: [`cms-banner-${key}`] },
     })
     if (!res.ok) return null
@@ -33,7 +33,7 @@ export async function getBanner(key: string): Promise<BannerData | null> {
 
 export async function getStaticPage(slug: string): Promise<StaticPageData | null> {
   try {
-    const res = await fetch(`${BACKEND_URL}/store/cms/pages/${slug}`, {
+    const res = await fetch(`${BACKEND_URL}/cms/pages/${slug}`, {
       next: { tags: [`cms-page-${slug}`] },
     })
     if (!res.ok) return null
