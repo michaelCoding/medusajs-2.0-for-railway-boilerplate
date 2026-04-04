@@ -5,17 +5,17 @@ import { getProductsList } from '@lib/data/products'
 import { getRegion } from '@lib/data/regions'
 import { getAllPosts } from '@lib/data/blog'
 import { getBanner } from '@lib/data/cms'
-import { heroBannerConfig, midBannerConfig } from '@lib/config/home'
-import { Banner } from '@modules/home/components/banner'
+import { heroBannerConfig } from '@lib/config/home'
 import Collections from '@modules/home/components/collections'
 import { ExploreBlog } from '@modules/home/components/explore-blog'
 import Hero from '@modules/home/components/hero'
+import { HowWeLive } from '@modules/home/components/how-we-live'
 import { ProductCarousel } from '@modules/products/components/product-carousel'
 import SkeletonProductsCarousel from '@modules/skeletons/templates/skeleton-products-carousel'
 
 export const metadata: Metadata = {
-  title: 'Store',
-  description: 'A performant frontend ecommerce starter with Next.js and Medusa.',
+  title: 'Solace — Thoughtful objects for a considered life',
+  description: 'Curated lifestyle and home goods, crafted to last.',
 }
 
 export default async function Home(props: {
@@ -23,13 +23,12 @@ export default async function Home(props: {
 }) {
   const { countryCode } = await props.params
 
-  const [{ collections }, { response: { products } }, region, allPosts, heroBanner, midBanner] = await Promise.all([
+  const [{ collections }, { response: { products } }, region, allPosts, heroBanner] = await Promise.all([
     getCollectionsList(),
     getProductsList({ pageParam: 0, queryParams: { limit: 9 }, countryCode }),
     getRegion(countryCode),
     getAllPosts(),
-    getBanner("hero"),
-    getBanner("mid"),
+    getBanner('hero'),
   ])
 
   const heroData = heroBanner
@@ -41,15 +40,6 @@ export default async function Home(props: {
       }
     : heroBannerConfig
 
-  const midData = midBanner
-    ? {
-        headline: midBanner.headline,
-        text: midBanner.text,
-        cta: { text: midBanner.cta_text, link: midBanner.cta_link },
-        image: { url: midBanner.image_url, alt: midBanner.headline },
-      }
-    : midBannerConfig
-
   const posts = allPosts.slice(0, 3).map((p) => ({
     slug: p.slug,
     title: p.title,
@@ -60,20 +50,29 @@ export default async function Home(props: {
 
   return (
     <>
+      {/* 1. Hero — story first */}
       <Hero data={heroData} />
+
+      {/* 2. Collections — immediate discovery */}
       {collections?.length > 0 && <Collections collections={collections} />}
+
+      {/* 3. Blog — content builds trust before selling */}
+      {posts.length > 0 && <ExploreBlog posts={posts} />}
+
+      {/* 4. Products — reader is primed, now convert */}
       {products && region && (
         <Suspense fallback={<SkeletonProductsCarousel />}>
           <ProductCarousel
             products={products}
             regionId={region.id}
-            title="Our bestsellers"
+            title="Our picks"
             viewAll={{ link: '/store', text: 'View all' }}
           />
         </Suspense>
       )}
-      <Banner data={midData} />
-      {posts.length > 0 && <ExploreBlog posts={posts} />}
+
+      {/* 5. Brand philosophy — close with values */}
+      <HowWeLive />
     </>
   )
 }
