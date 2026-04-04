@@ -1,9 +1,5 @@
 import Image from 'next/image'
 import { StoreCollection } from '@medusajs/types'
-import { Box } from '@modules/common/components/box'
-import { Button } from '@modules/common/components/button'
-import { Container } from '@modules/common/components/container'
-import { Heading } from '@modules/common/components/heading'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
 import { cn } from '@lib/util/cn'
 
@@ -17,37 +13,38 @@ const CollectionTile = ({
   title,
   handle,
   imgSrc,
-  id,
+  isLarge,
 }: {
   title: string
   handle: string
   imgSrc: string
-  id: number
+  isLarge: boolean
 }) => (
-  <Box className={cn('group relative', {
-    'small:col-start-2 small:row-start-1 small:row-end-3': id === 1,
-  })}>
+  <LocalizedClientLink
+    href={`/collections/${handle}`}
+    className={cn('group relative overflow-hidden block', {
+      'medium:row-span-2': isLarge,
+    })}
+  >
     <Image
       src={imgSrc}
       alt={`${title} collection`}
-      width={600}
-      height={300}
-      className="h-full w-full object-cover object-center"
+      width={800}
+      height={isLarge ? 800 : 400}
+      className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.04]"
     />
-    <Box className="absolute left-0 top-0 hidden h-full w-full flex-col p-6 small:flex large:p-10">
-      <Button asChild className="w-max self-end opacity-0 transition-all duration-500 group-hover:opacity-100">
-        <LocalizedClientLink href={`/collections/${handle}`}>Discover</LocalizedClientLink>
-      </Button>
-      <Box className="mt-auto text-static">
-        <Heading as="h3" className="text-2xl large:text-3xl">{title}</Heading>
-      </Box>
-    </Box>
-    <Box className="absolute left-0 top-0 block h-full w-full p-6 small:hidden">
-      <LocalizedClientLink href={`/collections/${handle}`} className="flex h-full w-full flex-col justify-end">
-        <Heading as="h3" className="text-2xl text-static">{title}</Heading>
-      </LocalizedClientLink>
-    </Box>
-  </Box>
+    {/* Gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+    {/* Title — slides up on hover */}
+    <div className="absolute bottom-0 left-0 right-0 p-6 large:p-8">
+      <h3 className="font-lora text-2xl large:text-3xl text-white leading-tight translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+        {title}
+      </h3>
+      <p className="text-xs uppercase tracking-[0.1em] text-white/70 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        Discover →
+      </p>
+    </div>
+  </LocalizedClientLink>
 )
 
 const Collections = ({ collections }: { collections: StoreCollection[] }) => {
@@ -55,17 +52,19 @@ const Collections = ({ collections }: { collections: StoreCollection[] }) => {
   if (!display.length) return null
 
   return (
-    <Container className="grid max-h-[660px] grid-rows-3 gap-2 small:max-h-[440px] small:grid-cols-2 small:grid-rows-2 large:max-h-[660px]">
-      {display.map((collection, id) => (
-        <CollectionTile
-          key={collection.id}
-          title={collection.title}
-          handle={collection.handle!}
-          imgSrc={PLACEHOLDER_IMAGES[id] ?? PLACEHOLDER_IMAGES[0]}
-          id={id}
-        />
-      ))}
-    </Container>
+    <section className="content-container py-20 large:py-28">
+      <div className="grid grid-cols-1 medium:grid-cols-2 gap-0 medium:grid-rows-2 medium:h-[600px] large:h-[720px]">
+        {display.map((collection, i) => (
+          <CollectionTile
+            key={collection.id}
+            title={collection.title}
+            handle={collection.handle!}
+            imgSrc={PLACEHOLDER_IMAGES[i] ?? PLACEHOLDER_IMAGES[0]}
+            isLarge={i === 0}
+          />
+        ))}
+      </div>
+    </section>
   )
 }
 
