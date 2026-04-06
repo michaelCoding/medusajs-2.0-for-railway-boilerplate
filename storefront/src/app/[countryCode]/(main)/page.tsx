@@ -60,7 +60,7 @@ export default async function Home(props: {
 
       {/* 4. Quiet Moment — scene with embedded products */}
       {products && region && (
-        <QuietMoment products={products} regionId={region.id} />
+        <QuietMoment products={products} />
       )}
 
       {/* 5. Selected Objects — minimal product carousel */}

@@ -4,7 +4,6 @@ import LocalizedClientLink from '@modules/common/components/localized-client-lin
 
 interface QuietMomentProps {
   products: StoreProduct[]
-  regionId: string
 }
 
 export function QuietMoment({ products }: QuietMomentProps) {

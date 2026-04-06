@@ -19,6 +19,7 @@ const Hero = ({ data }: { data: HeroConfig }) => {
             src={data.image.url}
             alt={data.image.alt}
             fill
+            sizes="(max-width: 768px) 0vw, 55vw"
             className="object-cover object-center"
             priority
           />
@@ -47,6 +48,7 @@ const Hero = ({ data }: { data: HeroConfig }) => {
             src={data.image.url}
             alt={data.image.alt}
             fill
+            sizes="100vw"
             className="object-cover object-center"
             priority
           />
