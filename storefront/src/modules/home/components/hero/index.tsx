@@ -60,7 +60,7 @@ const Hero = ({ data }: { data: HeroConfig }) => {
           </p>
           <LocalizedClientLink
             href={data.cta.link}
-            className="inline-flex w-max border border-[#1C1C1A] px-6 py-3 text-sm uppercase tracking-[0.1em] text-[#1C1C1A]"
+            className="inline-flex w-max border border-[#1C1C1A] px-6 py-3 text-sm uppercase tracking-[0.1em] text-[#1C1C1A] hover:bg-[#1C1C1A] hover:text-[#F7F4EF] transition-colors duration-300"
           >
             {data.cta.text}
           </LocalizedClientLink>

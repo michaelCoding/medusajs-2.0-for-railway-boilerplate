@@ -10,16 +10,3 @@ export const heroBannerConfig = {
     alt: 'Wooden objects in morning light',
   },
 }
-
-export const midBannerConfig = {
-  headline: 'New Arrivals',
-  text: 'Fresh styles just landed. Be the first to explore our latest collection.',
-  cta: {
-    text: 'Explore',
-    link: '/shop',
-  },
-  image: {
-    url: 'https://medusa-public-images.s3.eu-west-1.amazonaws.com/sweatshirt-vintage-front.png',
-    alt: 'Mid banner',
-  },
-}
