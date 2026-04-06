@@ -1,9 +1,4 @@
-'use client'
-
-import { useState, useCallback } from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
 import Image from 'next/image'
-import { cn } from '@lib/util/cn'
 import { HttpTypes } from '@medusajs/types'
 
 type ImageGalleryProps = {
@@ -11,64 +6,70 @@ type ImageGalleryProps = {
 }
 
 export default function ImageGallery({ images }: ImageGalleryProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false })
-
-  const scrollTo = useCallback(
-    (index: number) => {
-      emblaApi?.scrollTo(index)
-      setSelectedIndex(index)
-    },
-    [emblaApi]
-  )
-
   if (!images?.length) return null
 
+  const [main, second, third, ...rest] = images
+
   return (
-    <div className="flex flex-col gap-4">
-      {/* Main image carousel */}
-      <div className="overflow-hidden rounded-xl" ref={emblaRef}>
-        <div className="flex">
-          {images.map((image, index) => (
-            <div key={image.id} className="relative min-w-0 flex-[0_0_100%] aspect-square">
-              <Image
-                src={image.url}
-                alt={`Product image ${index + 1}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                priority={index === 0}
-              />
-            </div>
-          ))}
+    <div className="grid grid-cols-12 gap-4">
+      {/* Main large image */}
+      <div className="col-span-12">
+        <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-sm">
+          <Image
+            src={main.url}
+            alt="Product image"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 55vw"
+            priority
+          />
         </div>
       </div>
 
-      {/* Thumbnail strip */}
-      {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto no-scrollbar">
-          {images.map((image, index) => (
-            <button
-              key={image.id}
-              onClick={() => scrollTo(index)}
-              className={cn(
-                'relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
-                selectedIndex === index
-                  ? 'border-action-primary'
-                  : 'border-basic-primary hover:border-action-primary-hover'
-              )}
-            >
-              <Image
-                src={image.url}
-                alt={`Thumbnail ${index + 1}`}
-                fill
-                className="object-cover"
-                sizes="64px"
-              />
-            </button>
-          ))}
+      {/* Second image */}
+      {second && (
+        <div className="col-span-6">
+          <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+            <Image
+              src={second.url}
+              alt="Product image 2"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 28vw"
+            />
+          </div>
         </div>
       )}
+
+      {/* Third image */}
+      {third && (
+        <div className="col-span-6">
+          <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+            <Image
+              src={third.url}
+              alt="Product image 3"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 28vw"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Remaining images as smaller thumbnails if any */}
+      {rest.map((img, i) => (
+        <div key={img.id} className="col-span-6">
+          <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+            <Image
+              src={img.url}
+              alt={`Product image ${i + 4}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 28vw"
+            />
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

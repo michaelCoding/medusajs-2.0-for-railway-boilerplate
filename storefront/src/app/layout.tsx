@@ -2,12 +2,27 @@ import { getBaseURL } from '@lib/util/env'
 import { Metadata } from 'next'
 import { ThemeProvider } from '@modules/common/components/theme-provider'
 import { Toaster } from 'sonner'
-import { Lora } from 'next/font/google'
+import { Lora, Noto_Serif, Plus_Jakarta_Sans } from 'next/font/google'
 import 'styles/globals.css'
 
 const lora = Lora({
   subsets: ['latin'],
   variable: '--font-lora',
+  display: 'swap',
+})
+
+const notoSerif = Noto_Serif({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-noto-serif',
+  display: 'swap',
+})
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-plus-jakarta',
   display: 'swap',
 })
 
@@ -17,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={lora.variable}>
+    <html lang="en" suppressHydrationWarning className={`${lora.variable} ${notoSerif.variable} ${plusJakartaSans.variable}`}>
       <head>
         <link
           rel="stylesheet"

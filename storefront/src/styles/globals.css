@@ -121,6 +121,15 @@ html.dark {
   }
 }
 
+/* ── Product detail font overrides ─────────────── */
+.font-headline,
+.font-headline * {
+  font-family: var(--font-noto-serif), Georgia, serif;
+}
+.font-body {
+  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+}
+
 /* ── Scandi Redesign Tokens ─────────────────────── */
 :root {
   --scandi-bg: #F7F4EF;
