@@ -10,9 +10,9 @@ export function ExploreBlog({ posts }: { posts: Post[] }) {
       {/* Header */}
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-3">Journal</p>
+          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-3">Stories</p>
           <h2 className="font-lora text-4xl large:text-5xl text-[#1C1C1A] -tracking-[0.02em]">
-            Stories &amp; ideas
+            Stories from Woodenly
           </h2>
         </div>
         <LocalizedClientLink
