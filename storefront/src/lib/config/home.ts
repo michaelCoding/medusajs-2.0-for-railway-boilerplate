@@ -1,13 +1,13 @@
 export const heroBannerConfig = {
-  headline: 'Discover Your Style',
-  text: 'Explore our curated collection of premium essentials designed for everyday comfort and timeless style.',
+  headline: 'Live gently. Live woodenly.',
+  text: 'A quieter way to live, shaped by wood.',
   cta: {
-    text: 'Shop Now',
-    link: '/shop',
+    text: 'Enter the moment →',
+    link: '/store',
   },
   image: {
-    url: 'https://medusa-public-images.s3.eu-west-1.amazonaws.com/tee-black-front.png',
-    alt: 'Hero banner',
+    url: 'https://images.unsplash.com/photo-1449247709967-d4461a6a6103?w=1200&q=80',
+    alt: 'Wooden objects in morning light',
   },
 }
 

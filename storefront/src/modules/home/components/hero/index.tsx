@@ -25,9 +25,6 @@ const Hero = ({ data }: { data: HeroConfig }) => {
         </div>
         {/* Text column */}
         <div className="flex flex-col justify-center px-12 large:px-20 py-16 bg-[var(--scandi-bg)]">
-          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-6">
-            New collection
-          </p>
           <h1 className="font-lora text-5xl large:text-6xl leading-[1.1] text-[#1C1C1A] mb-8 -tracking-[0.02em]">
             {data.headline}
           </h1>
@@ -55,9 +52,6 @@ const Hero = ({ data }: { data: HeroConfig }) => {
           />
         </div>
         <div className="px-6 py-10 bg-[var(--scandi-bg)]">
-          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-4">
-            New collection
-          </p>
           <h1 className="font-lora text-4xl leading-[1.15] text-[#1C1C1A] mb-5 -tracking-[0.02em]">
             {data.headline}
           </h1>
