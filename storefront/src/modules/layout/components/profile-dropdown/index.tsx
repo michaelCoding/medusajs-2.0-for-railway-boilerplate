@@ -1,133 +1,132 @@
 'use client'
 
-import React, { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { useParams } from 'next/navigation'
-
 import { Popover, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
 import { signout } from '@lib/data/customer'
-import AccountNavLink from '@modules/account/components/account-nav/account-nav-link'
-import { profileNavItemsGroups } from '@modules/account/components/account-nav/consts'
-import { Box } from '@modules/common/components/box'
-import { Button } from '@modules/common/components/button'
-import Divider from '@modules/common/components/divider'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
-import { HeadphonesIcon, LogoutIcon, UserIcon } from '@modules/common/icons'
-
-import { ThemeSwitcher } from './theme-switcher'
 
 const ProfileDropdown = ({ loggedIn }: { loggedIn: boolean }) => {
-  const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
-
-  const open = () => setCartDropdownOpen(true)
-  const close = () => setCartDropdownOpen(false)
-
+  const [open, setOpen] = useState(false)
   const { countryCode } = useParams()
 
   const handleLogout = async () => {
     await signout(countryCode as string)
   }
 
+  const navItems = [
+    { icon: 'package_2',  label: 'My Orders',        href: '/account/orders' },
+    { icon: 'favorite',   label: 'Wishlist',          href: '/account' },
+    { icon: 'settings',   label: 'Account Settings',  href: '/account/profile' },
+  ]
+
   return (
-    <Box className="z-50 h-full" onMouseEnter={open} onMouseLeave={close}>
-      <Popover className="relative h-full">
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <Popover className="relative">
+        {/* Trigger */}
         <Popover.Button
-          className="cursor-default rounded-full bg-transparent !p-2 text-action-primary outline-none hover:text-action-primary-hover active:bg-fg-secondary-pressed active:text-action-primary-pressed xsmall:!p-3.5 small:hover:bg-fg-secondary-hover"
+          className="scale-95 active:scale-90 transition-transform text-[#6f4627] outline-none flex items-center"
           data-testid="profile-dropdown-button"
+          aria-label="Account"
         >
-          <UserIcon />
+          <span
+            className="material-symbols-outlined"
+            style={{ fontVariationSettings: loggedIn ? "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" : "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24" }}
+          >
+            account_circle
+          </span>
         </Popover.Button>
+
+        {/* Dropdown panel */}
         <Transition
-          show={cartDropdownOpen}
+          show={open}
           as={Fragment}
           enter="transition ease-out duration-200"
-          enterFrom="opacity-0 translate-y-1"
-          enterTo="opacity-100 translate-y-0"
+          enterFrom="opacity-0 scale-95"
+          enterTo="opacity-100 scale-100"
           leave="transition ease-in duration-150"
-          leaveFrom="opacity-100 translate-y-0"
-          leaveTo="opacity-0 translate-y-1"
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
         >
           <Popover.Panel
             static
-            className="absolute -right-10 top-[calc(100%+8px)] w-[264px] border border-action-primary bg-primary text-basic-primary small:right-0"
-            data-testid={`${loggedIn ? 'profile-dropdown-logged-in' : 'profile-dropdown-logged-out'}`}
+            className="absolute right-0 mt-4 w-72 origin-top-right z-[100]"
+            data-testid={loggedIn ? 'profile-dropdown-logged-in' : 'profile-dropdown-logged-out'}
           >
-            {loggedIn ? (
-              profileNavItemsGroups.slice(0, 2).map((group, groupIndex) => (
-                <Fragment key={groupIndex}>
-                  <ul className="p-2">
-                    {group.map((item) => (
-                      <li key={item.href || item.type}>
-                        {item.type === 'logout' ? (
-                          <Button
-                            variant="text"
-                            onClick={handleLogout}
-                            className="w-full justify-start rounded-none p-0 hover:bg-hover"
-                          >
-                            <div className="flex items-center gap-2 p-4 text-lg">
-                              {item.icon}
-                              {item.label}
-                            </div>
-                          </Button>
-                        ) : (
-                          <AccountNavLink href={item.href} icon={item.icon}>
-                            {item.label}
-                          </AccountNavLink>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                  {groupIndex < profileNavItemsGroups.length - 1 && (
-                    <div className="h-px w-full bg-hover" />
+            <div className="bg-[#ffffff] border border-[#d5c3b8]/20 rounded-xl shadow-[0px_20px_40px_rgba(28,28,25,0.08)] overflow-hidden">
+              <div className="p-6 space-y-6">
+
+                {/* Header */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-lora text-[#1c1c19]">
+                    {loggedIn ? 'Welcome back' : 'Welcome back'}
+                  </h3>
+                  {!loggedIn && (
+                    <LocalizedClientLink
+                      href="/account"
+                      className="block w-full bg-[#6f4627] text-white py-3 rounded-lg font-medium text-sm text-center transition-all hover:bg-[#8b5e3c] active:scale-[0.98]"
+                      data-testid="profile-dropdown-sign-in-up"
+                    >
+                      Sign In / Register
+                    </LocalizedClientLink>
                   )}
-                </Fragment>
-              ))
-            ) : (
-              <>
-                <Box
-                  className="flex flex-col gap-2 p-2"
-                  data-testid="profile-dropdown-sign-in-up"
-                >
-                  <Button size="sm" asChild>
-                    <LocalizedClientLink href="/account?mode=sign-in">
-                      Sign in
+                </div>
+
+                {/* Nav links */}
+                <div className="space-y-1">
+                  {navItems.map(({ icon, label, href }) => (
+                    <LocalizedClientLink
+                      key={href}
+                      href={href}
+                      className="flex items-center gap-4 px-3 py-2.5 rounded-lg text-[#51443c] hover:bg-[#f6f3ee] hover:text-[#1c1c19] transition-colors"
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: '20px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20" }}
+                      >
+                        {icon}
+                      </span>
+                      <span className="text-sm">{label}</span>
                     </LocalizedClientLink>
-                  </Button>
-                  <Button size="sm" asChild variant="tonal">
-                    <LocalizedClientLink href="/account?mode=register">
-                      Sign up
-                    </LocalizedClientLink>
-                  </Button>
-                </Box>
-                <Divider />
-              </>
-            )}
-            <Box className="p-2">
-              <ThemeSwitcher />
-              <AccountNavLink href="#" icon={<HeadphonesIcon />}>
-                Support center
-              </AccountNavLink>
-            </Box>
-            {loggedIn && (
-              <>
-                <Divider />
-                <Box className="p-2">
-                  <Button
-                    variant="text"
-                    onClick={handleLogout}
-                    className="w-full justify-start rounded-none p-0 hover:bg-hover"
-                  >
-                    <div className="flex items-center gap-4 p-4 text-lg">
-                      <LogoutIcon />
-                      Log out
-                    </div>
-                  </Button>
-                </Box>
-              </>
-            )}
+                  ))}
+
+                  {loggedIn && (
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-4 px-3 py-2.5 rounded-lg text-[#51443c] hover:bg-[#f6f3ee] hover:text-[#1c1c19] transition-colors w-full text-left"
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: '20px', fontVariationSettings: "'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20" }}
+                      >
+                        logout
+                      </span>
+                      <span className="text-sm">Sign Out</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Artisan Club footer */}
+                <div className="pt-4 border-t border-[#d5c3b8]/10">
+                  <p className="text-[10px] uppercase tracking-widest text-[#83746b] font-bold">
+                    The Artisan Club
+                  </p>
+                  <p className="text-xs text-[#51443c] mt-1">
+                    Join for exclusive early access to new collections.
+                  </p>
+                </div>
+
+              </div>
+            </div>
           </Popover.Panel>
         </Transition>
       </Popover>
-    </Box>
+    </div>
   )
 }
 
