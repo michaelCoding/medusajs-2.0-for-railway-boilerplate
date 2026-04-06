@@ -40,8 +40,9 @@ export default function Moments() {
           >
             <Image
               src={scene.image}
-              alt={scene.title}
+              alt=""
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
             />
             {/* gradient overlay */}
@@ -55,7 +56,7 @@ export default function Moments() {
                 {scene.line}
               </p>
               <span className="text-xs uppercase tracking-[0.12em] text-white/60 group-hover:text-white/90 transition-colors duration-300">
-                Enter →
+                Enter <span aria-hidden="true">→</span>
               </span>
             </div>
           </LocalizedClientLink>
