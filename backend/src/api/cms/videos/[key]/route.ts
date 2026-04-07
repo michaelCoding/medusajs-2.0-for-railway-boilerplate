@@ -7,7 +7,7 @@ export async function GET(
   res: MedusaResponse
 ) {
   const cmsService: CmsModuleService = req.scope.resolve(CMS_MODULE)
-  const videos = await cmsService.listVideos({ key: req.params.key })
+  const videos = await cmsService.listVideoes({ key: req.params.key })
 
   if (!videos.length) {
     res.status(404).json({ message: "No videos found" })

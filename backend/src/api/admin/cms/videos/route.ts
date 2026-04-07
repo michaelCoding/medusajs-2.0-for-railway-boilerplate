@@ -4,7 +4,7 @@ import CmsModuleService from "../../../../modules/cms/service"
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const cmsService: CmsModuleService = req.scope.resolve(CMS_MODULE)
-  const videos = await cmsService.listVideos()
+  const videos = await cmsService.listVideoes()
   res.json({ videos })
 }
 
@@ -17,7 +17,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return
   }
 
-  const video = await cmsService.createVideos({
+  const video = await cmsService.createVideoes({
     key: body.key as string,
     url: body.url as string,
     title: body.title as string,

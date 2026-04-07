@@ -11,7 +11,8 @@
       "Bash(NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_e9b929eaa9fed16b7a97662810159ed68d225f2dc3381213eeddc52818e34f70 npx next build)",
       "Bash(git -C \"D:/workspace/standalone-website/e-commerce/storefront\" log --oneline --diff-filter=M -- \"src/app/[countryCode]/\\(main\\)/products/**\")",
       "Bash(git -C \"D:/workspace/standalone-website/e-commerce\" log --oneline --diff-filter=M -- \"storefront/src/app/\\\\[countryCode\\\\]/\\\\\\(main\\\\\\)/products/**\")",
-      "Bash(git -C \"D:/workspace/standalone-website/e-commerce\" show --stat HEAD)"
+      "Bash(git -C \"D:/workspace/standalone-website/e-commerce\" show --stat HEAD)",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }

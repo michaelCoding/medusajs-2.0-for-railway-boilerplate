@@ -27,7 +27,7 @@ export async function PUT(req: MedusaRequest<unknown, { id: string }>, res: Medu
     update.published_at = body.published_at
   }
 
-  const post = await cmsService.updateBlogPosts(update)
+  const post = await cmsService.updateBlogPosts(update as any)
   res.json({ post })
 }
 

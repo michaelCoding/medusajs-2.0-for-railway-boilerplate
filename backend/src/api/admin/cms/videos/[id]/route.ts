@@ -18,12 +18,12 @@ export async function PUT(req: MedusaRequest<unknown, { id: string }>, res: Medu
   if (body.tag !== undefined) update.tag = body.tag
   if (body.duration !== undefined) update.duration = body.duration
   if (body.poster_url !== undefined) update.poster_url = body.poster_url
-  const video = await cmsService.updateVideos(update as any)
+  const video = await cmsService.updateVideoes(update as any)
   res.json({ video })
 }
 
 export async function DELETE(req: MedusaRequest<unknown, { id: string }>, res: MedusaResponse) {
   const cmsService: CmsModuleService = req.scope.resolve(CMS_MODULE)
-  await cmsService.deleteVideos(req.params.id)
+  await cmsService.deleteVideoes(req.params.id)
   res.json({ id: req.params.id, deleted: true })
 }

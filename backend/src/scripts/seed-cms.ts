@@ -126,7 +126,7 @@ export default async function seedCms({ container }: ExecArgs) {
   for (const seed of bannerSeeds) {
     const existing = await cmsService.listBanners({ key: seed.key })
     if (existing.length) {
-      await cmsService.updateBanners(existing[0].id, seed)
+      await cmsService.updateBanners({ id: existing[0].id, ...seed })
       console.log(`Updated banner: ${seed.key}`)
     } else {
       await cmsService.createBanners(seed)
@@ -166,9 +166,9 @@ export default async function seedCms({ container }: ExecArgs) {
   ]
 
   for (const seed of videoSeeds) {
-    const existing = await cmsService.listVideos({ key: seed.key })
+    const existing = await cmsService.listVideoes({ key: seed.key })
     if (!existing.length) {
-      await cmsService.createVideos(seed)
+      await cmsService.createVideoes(seed)
       console.log(`Created video: ${seed.key}`)
     } else {
       console.log(`Video already exists: ${seed.key}`)
@@ -258,7 +258,8 @@ We hope you love every piece. If something goes wrong, please contact us before 
       await cmsService.createStaticPages(page)
       console.log(`Created static page: ${page.slug}`)
     } else {
-      await cmsService.updateStaticPages(existing[0].id, {
+      await cmsService.updateStaticPages({
+        id: existing[0].id,
         title: page.title,
         content: page.content,
       })
@@ -270,7 +271,7 @@ We hope you love every piece. If something goes wrong, please contact us before 
   for (const post of blogPosts) {
     const existing = await cmsService.listBlogPosts({ slug: post.slug })
     if (!existing.length) {
-      await cmsService.createBlogPosts(post)
+      await cmsService.createBlogPosts({ ...post, tags: post.tags as unknown as Record<string, unknown> })
       console.log(`Created blog post: ${post.slug}`)
     } else {
       console.log(`Blog post already exists: ${post.slug}`)
