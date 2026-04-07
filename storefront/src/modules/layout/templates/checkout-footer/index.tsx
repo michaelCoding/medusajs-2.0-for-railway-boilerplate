@@ -1,62 +1,53 @@
-import { checkoutFooterNavigation } from '@lib/constants'
-import { Box } from '@modules/common/components/box'
-import { Button } from '@modules/common/components/button'
-import { Container } from '@modules/common/components/container'
-import { Heading } from '@modules/common/components/heading'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
-import { NavigationItem } from '@modules/common/components/navigation-item'
-import { Text } from '@modules/common/components/text'
 import {
-  HeadphonesIcon,
-  KlarnaIcon,
-  MaestroIcon,
-  MastercardIcon,
-  PayPalIcon,
-  ShopPayIcon,
-  StripeIcon,
   VisaIcon,
+  MastercardIcon,
+  MaestroIcon,
+  StripeIcon,
+  PayPalIcon,
 } from '@modules/common/icons'
 
 export default function CheckoutFooter() {
   return (
-    <footer className="mx-0 max-w-full bg-static px-0 py-0">
-      <Container className="flex flex-col gap-8 text-static">
-        <Box className="flex flex-col gap-4 small:flex-row small:items-center">
-          <Heading className="text-lg text-static">Have questions?</Heading>
-          <Button size="sm" withIcon asChild className="w-max">
-            <LocalizedClientLink href="#">
-              <HeadphonesIcon />
-              55 555 00 00
-            </LocalizedClientLink>
-          </Button>
-        </Box>
-        <Box className="flex flex-col-reverse gap-6 medium:flex-row medium:items-end medium:justify-between">
-          <Box className="flex flex-wrap gap-6 gap-y-1">
-            <Text size="md" className="shrink-0 text-secondary">
-              © {new Date().getFullYear()} Medusa Store. All rights reserved.
-            </Text>
-            {checkoutFooterNavigation.map((link, id) => (
-              <NavigationItem
-                key={`other-${id}`}
-                variant="secondary"
-                className="shrink-0 hover:text-static"
-                href={link.href}
-              >
-                {link.title}
-              </NavigationItem>
-            ))}
-          </Box>
-          <Box className="flex flex-wrap items-center gap-2">
+    <footer className="bg-[#1c1c1a] text-[#f7f4ef]">
+      <div className="content-container py-8">
+        <div className="flex flex-col medium:flex-row items-start medium:items-center justify-between gap-6">
+
+          {/* Brand + copyright */}
+          <div className="flex flex-col gap-1">
+            <p className="font-lora text-base text-[#f7f4ef]">The Woodenly</p>
+            <p className="text-xs text-[#f7f4ef]/30">
+              © {new Date().getFullYear()} The Woodenly. Handcrafted for the Slow Life.
+            </p>
+          </div>
+
+          {/* Payment icons */}
+          <div className="flex items-center gap-2 opacity-60">
             <VisaIcon />
             <MastercardIcon />
             <MaestroIcon />
             <StripeIcon />
             <PayPalIcon />
-            <ShopPayIcon />
-            <KlarnaIcon />
-          </Box>
-        </Box>
-      </Container>
+          </div>
+
+          {/* Links */}
+          <div className="flex gap-6">
+            {[
+              { href: '/privacy-policy', label: 'Privacy' },
+              { href: '/terms-and-conditions', label: 'Terms' },
+            ].map(({ href, label }) => (
+              <LocalizedClientLink
+                key={href}
+                href={href}
+                className="text-xs text-[#f7f4ef]/30 hover:text-[#f7f4ef]/70 transition-colors"
+              >
+                {label}
+              </LocalizedClientLink>
+            ))}
+          </div>
+
+        </div>
+      </div>
     </footer>
   )
 }

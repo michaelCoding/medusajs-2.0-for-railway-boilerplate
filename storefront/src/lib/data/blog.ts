@@ -12,6 +12,7 @@ export type BlogPost = {
   date: string  // alias for published_at for backward compat
   content: string
   tags: string[] | null
+  featured_product_handle?: string | null
 }
 
 export async function getAllPosts(): Promise<Omit<BlogPost, "content">[]> {

@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom"
 const tabs = [
   { label: "Blog Posts", path: "/cms/blog" },
   { label: "Banners",    path: "/cms/banners" },
+  { label: "Videos",     path: "/cms/videos" },
   { label: "Pages",      path: "/cms/pages" },
 ]
 

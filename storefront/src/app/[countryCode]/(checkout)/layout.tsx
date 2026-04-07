@@ -1,5 +1,5 @@
-import CheckoutFooter from '@modules/layout/templates/checkout-footer'
 import CheckoutNav from '@modules/layout/templates/checkout-nav'
+import Footer from '@modules/layout/templates/footer'
 
 export default function CheckoutLayout({
   children,
@@ -14,7 +14,7 @@ export default function CheckoutLayout({
       <div className="relative" data-testid="checkout-container">
         {children}
       </div>
-      <CheckoutFooter />
+      <Footer />
     </div>
   )
 }

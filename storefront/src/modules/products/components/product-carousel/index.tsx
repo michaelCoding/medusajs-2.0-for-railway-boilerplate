@@ -8,19 +8,25 @@ interface ViewAllProps { link: string; text?: string }
 interface ProductCarouselProps {
   products: StoreProduct[]
   regionId: string
+  label?: string
   title: string
   viewAll?: ViewAllProps
   testId?: string
 }
 
-export function ProductCarousel({ products, regionId, title, viewAll, testId }: ProductCarouselProps) {
+export function ProductCarousel({ products, regionId, label, title, viewAll, testId }: ProductCarouselProps) {
   return (
     <section className="content-container py-20 large:py-28 overflow-hidden" data-testid={testId}>
       {/* Header */}
       <div className="flex items-end justify-between mb-10">
-        <h2 className="font-lora italic text-4xl large:text-5xl text-[#1C1C1A] -tracking-[0.02em]">
-          {title}
-        </h2>
+        <div>
+          {label && (
+            <p className="text-xs uppercase tracking-[0.28em] text-[#6f4627]/60 font-semibold mb-4">{label}</p>
+          )}
+          <h2 className="font-lora text-4xl large:text-5xl text-[#1C1C1A] -tracking-[0.02em]">
+            {title}
+          </h2>
+        </div>
         {viewAll && (
           <LocalizedClientLink
             href={viewAll.link}

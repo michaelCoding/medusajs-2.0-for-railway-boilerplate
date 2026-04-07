@@ -1,22 +1,46 @@
 "use client"
 
 import { RadioGroup } from "@headlessui/react"
-import { CheckCircleSolid } from "@medusajs/icons"
-import { Button, Heading, Text, clx } from "@medusajs/ui"
-
-import Divider from "@modules/common/components/divider"
-import Radio from "@modules/common/components/radio"
-import ErrorMessage from "@modules/checkout/components/error-message"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import { setShippingMethod } from "@lib/data/cart"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
+import ErrorMessage from "@modules/checkout/components/error-message"
 
 type ShippingProps = {
   cart: HttpTypes.StoreCart
   availableShippingMethods: HttpTypes.StoreCartShippingOption[] | null
 }
+
+const StepBadge = ({
+  num,
+  active,
+  completed,
+}: {
+  num: string
+  active: boolean
+  completed: boolean
+}) => (
+  <div
+    className={[
+      "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-semibold transition-all",
+      completed
+        ? "bg-[#d4ede4] text-[#2d6b4f]"
+        : active
+        ? "bg-[#6f4627] text-white"
+        : "bg-[#e8e4dc] text-[#9b9590]",
+    ].join(" ")}
+  >
+    {completed ? (
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+        <path d="M2 5.5l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ) : (
+      num
+    )}
+  </div>
+)
 
 const Shipping: React.FC<ShippingProps> = ({
   cart,
@@ -32,9 +56,10 @@ const Shipping: React.FC<ShippingProps> = ({
   const isOpen = searchParams.get("step") === "delivery"
 
   const selectedShippingMethod = availableShippingMethods?.find(
-    // To do: remove the previously selected shipping method instead of using the last one
     (method) => method.id === cart.shipping_methods?.at(-1)?.shipping_option_id
   )
+
+  const completed = !isOpen && (cart.shipping_methods?.length ?? 0) > 0
 
   const handleEdit = () => {
     router.push(pathname + "?step=delivery", { scroll: false })
@@ -47,124 +72,138 @@ const Shipping: React.FC<ShippingProps> = ({
   const set = async (id: string) => {
     setIsLoading(true)
     await setShippingMethod({ cartId: cart.id, shippingMethodId: id })
-      .catch((err) => {
-        setError(err.message)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+      .catch((err) => setError(err.message))
+      .finally(() => setIsLoading(false))
   }
 
   useEffect(() => {
     setError(null)
   }, [isOpen])
 
+  const locked = !isOpen && (cart.shipping_methods?.length ?? 0) === 0
+
   return (
-    <div className="bg-primary">
-      <div className="flex flex-row items-center justify-between mb-6">
-        <Heading
-          level="h2"
-          className={clx(
-            "flex flex-row text-3xl-regular gap-x-2 items-baseline",
-            {
-              "opacity-50 pointer-events-none select-none":
-                !isOpen && cart.shipping_methods?.length === 0,
-            }
-          )}
-        >
-          Delivery
-          {!isOpen && (cart.shipping_methods?.length ?? 0) > 0 && (
-            <CheckCircleSolid />
-          )}
-        </Heading>
-        {!isOpen &&
-          cart?.shipping_address &&
-          cart?.billing_address &&
-          cart?.email && (
-            <Text>
-              <button
-                onClick={handleEdit}
-                className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
-                data-testid="edit-delivery-button"
-              >
-                Edit
-              </button>
-            </Text>
-          )}
+    <div>
+      {/* ── Section header ── */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <StepBadge num="02" active={isOpen} completed={completed} />
+          <h2
+            className={[
+              "font-lora text-[20px] leading-none transition-colors",
+              isOpen || completed ? "text-[#1c1c1a]" : "text-[#9b9590]",
+            ].join(" ")}
+          >
+            Delivery
+          </h2>
+        </div>
+        {completed && (
+          <button
+            onClick={handleEdit}
+            className="text-xs text-[#6f4627] hover:underline transition-colors"
+            data-testid="edit-delivery-button"
+          >
+            Edit
+          </button>
+        )}
       </div>
+
+      {/* ── Open state ── */}
       {isOpen ? (
         <div data-testid="delivery-options-container">
-          <div className="pb-8">
-            <RadioGroup value={selectedShippingMethod?.id} onChange={set}>
-              {availableShippingMethods?.map((option) => {
-                return (
+          <div className="pb-6">
+            <RadioGroup value={selectedShippingMethod?.id ?? ""} onChange={set}>
+              <div className="flex flex-col gap-2">
+                {availableShippingMethods?.map((option) => (
                   <RadioGroup.Option
                     key={option.id}
                     value={option.id}
                     data-testid="delivery-option-radio"
-                    className={clx(
-                      "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
-                      {
-                        "border-ui-border-interactive":
-                          option.id === selectedShippingMethod?.id,
-                      }
-                    )}
+                    className={({ checked }) =>
+                      [
+                        "flex items-center justify-between px-4 py-3.5 rounded-xl border cursor-pointer transition-all duration-200",
+                        checked
+                          ? "border-[#6f4627] bg-[#fef9f5]"
+                          : "border-[#e8e4dc] bg-white hover:border-[#c4b89a]",
+                      ].join(" ")
+                    }
                   >
-                    <div className="flex items-center gap-x-4">
-                      <Radio
-                        checked={option.id === selectedShippingMethod?.id}
-                      />
-                      <span className="text-base-regular">{option.name}</span>
-                    </div>
-                    <span className="justify-self-end text-basic-primary">
-                      {convertToLocale({
-                        amount: option.amount!,
-                        currency_code: cart?.currency_code,
-                      })}
-                    </span>
+                    {({ checked }) => (
+                      <>
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={[
+                              "w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                              checked
+                                ? "border-[#6f4627]"
+                                : "border-[#d4cfc7]",
+                            ].join(" ")}
+                          >
+                            {checked && (
+                              <div className="w-2 h-2 rounded-full bg-[#6f4627]" />
+                            )}
+                          </div>
+                          <span className="text-sm text-[#1c1c1a]">{option.name}</span>
+                        </div>
+                        <span className="text-sm font-semibold text-[#1c1c1a]">
+                          {convertToLocale({
+                            amount: option.amount!,
+                            currency_code: cart?.currency_code,
+                          })}
+                        </span>
+                      </>
+                    )}
                   </RadioGroup.Option>
-                )
-              })}
+                ))}
+              </div>
             </RadioGroup>
           </div>
 
-          <ErrorMessage
-            error={error}
-            data-testid="delivery-option-error-message"
-          />
+          <ErrorMessage error={error} data-testid="delivery-option-error-message" />
 
-          <Button
-            size="large"
-            className="mt-6"
+          <button
             onClick={handleSubmit}
-            isLoading={isLoading}
-            disabled={!cart.shipping_methods?.[0]}
+            disabled={isLoading || !cart.shipping_methods?.[0]}
+            className="w-full py-3.5 bg-[#1c1c1a] text-white text-sm font-semibold rounded-xl hover:bg-[#2d2d2a] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
             data-testid="submit-delivery-option-button"
           >
-            Continue to payment
-          </Button>
+            {isLoading ? (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                Continue to payment
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </>
+            )}
+          </button>
         </div>
       ) : (
-        <div>
-          <div className="text-small-regular">
-            {cart && (cart.shipping_methods?.length ?? 0) > 0 && (
-              <div className="flex flex-col w-1/3">
-                <Text className="txt-medium-plus text-basic-primary mb-1">
-                  Method
-                </Text>
-                <Text className="txt-medium text-secondary">
-                  {selectedShippingMethod?.name}{" "}
+        /* ── Closed (summary) state ── */
+        <div className="text-sm text-[#6b6860]">
+          {(cart.shipping_methods?.length ?? 0) > 0 && (
+            <div className="flex flex-col gap-0.5">
+              <p className="text-xs font-semibold text-[#1c1c1a] uppercase tracking-wider mb-1.5">
+                Method
+              </p>
+              <p>
+                {selectedShippingMethod?.name}{" "}
+                <span className="text-[#9b9590]">
+                  (
                   {convertToLocale({
                     amount: selectedShippingMethod?.amount!,
                     currency_code: cart?.currency_code,
                   })}
-                </Text>
-              </div>
-            )}
-          </div>
+                  )
+                </span>
+              </p>
+            </div>
+          )}
         </div>
       )}
-      <Divider className="mt-8" />
+
+      <div className="h-px bg-[#e8e4dc] mt-8" />
     </div>
   )
 }

@@ -16,7 +16,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
       <div className="hidden small:block">
         <div className="text-xl-semi flex justify-between items-center mb-4">
           <span data-testid="welcome-message" data-value={customer?.first_name}>
-            Hello {customer?.first_name}
+            Welcome back, {customer?.first_name}
           </span>
           <span className="text-small-regular text-ui-fg-base">
             Signed in as:{" "}
@@ -67,7 +67,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
 
             <div className="flex flex-col gap-y-4">
               <div className="flex items-center gap-x-2">
-                <h3 className="text-large-semi">Recent orders</h3>
+                <h3 className="text-large-semi">Order History</h3>
               </div>
               <ul
                 className="flex flex-col gap-y-4"
@@ -124,7 +124,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
                     )
                   })
                 ) : (
-                  <span data-testid="no-orders-message">No recent orders</span>
+                  <span data-testid="no-orders-message">No orders yet — your collection awaits.</span>
                 )}
               </ul>
             </div>

@@ -1,9 +1,5 @@
 import { RadioGroup } from "@headlessui/react"
-import { InformationCircleSolid } from "@medusajs/icons"
-import { Text, Tooltip, clx } from "@medusajs/ui"
 import React from "react"
-
-import Radio from "@modules/common/components/radio"
 
 import PaymentTest from "../payment-test"
 import { isManual } from "@lib/constants"
@@ -22,6 +18,7 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
   disabled = false,
 }) => {
   const isDevelopment = process.env.NODE_ENV === "development"
+  const isSelected = selectedPaymentOptionId === paymentProviderId
 
   return (
     <>
@@ -29,28 +26,42 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
         key={paymentProviderId}
         value={paymentProviderId}
         disabled={disabled}
-        className={clx(
-          "flex flex-col gap-y-2 text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
-          {
-            "border-ui-border-interactive":
-              selectedPaymentOptionId === paymentProviderId,
-          }
-        )}
+        className={[
+          "flex flex-col gap-y-2 cursor-pointer rounded-xl border px-4 py-3.5 mb-2 transition-all duration-200",
+          isSelected
+            ? "border-[#6f4627] bg-[#fef9f5]"
+            : "border-[#e8e4dc] bg-white hover:border-[#c4b89a]",
+          disabled ? "opacity-50 cursor-not-allowed" : "",
+        ].join(" ")}
       >
-        <div className="flex items-center justify-between ">
-          <div className="flex items-center gap-x-4">
-            <Radio checked={selectedPaymentOptionId === paymentProviderId} />
-            <Text className="text-base-regular">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Custom radio dot */}
+            <div
+              className={[
+                "w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                isSelected ? "border-[#6f4627]" : "border-[#d4cfc7]",
+              ].join(" ")}
+            >
+              {isSelected && (
+                <div className="w-2 h-2 rounded-full bg-[#6f4627]" />
+              )}
+            </div>
+
+            <span className="text-sm text-[#1c1c1a]">
               {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
-            </Text>
+            </span>
+
             {isManual(paymentProviderId) && isDevelopment && (
               <PaymentTest className="hidden small:block" />
             )}
           </div>
-          <span className="justify-self-end text-ui-fg-base">
+
+          <span className="text-[#9b9590]">
             {paymentInfoMap[paymentProviderId]?.icon}
           </span>
         </div>
+
         {isManual(paymentProviderId) && isDevelopment && (
           <PaymentTest className="small:hidden text-[10px]" />
         )}

@@ -18,16 +18,13 @@ export default async function Orders() {
 
   return (
     <div className="w-full" data-testid="orders-page-wrapper">
-      <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">Orders</h1>
-        <p className="text-base-regular">
-          View your previous orders and their status. You can also create
-          returns or exchanges for your orders if needed.
+      <div className="mb-8">
+        <h1 className="font-lora text-2xl text-[#1c1c1a] mb-2">Orders</h1>
+        <p className="text-sm text-[#9b9590]">
+          Your purchase history — each piece a part of your collection.
         </p>
       </div>
-      <div>
-        <OrderOverview orders={orders} />
-      </div>
+      <OrderOverview orders={orders} />
     </div>
   )
 }

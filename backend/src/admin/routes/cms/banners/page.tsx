@@ -11,6 +11,12 @@ type Banner = {
   image_url: string
 }
 
+const POSITIONS = [
+  { value: "home",    label: "Home — Homepage banner" },
+  { value: "store",   label: "Store — Shop page banner" },
+  { value: "journal", label: "Journal — Blog page banner" },
+]
+
 const EMPTY: Omit<Banner, "id"> = {
   key: "", headline: "", text: "", cta_text: "", cta_link: "", image_url: "",
 }
@@ -102,16 +108,19 @@ function BannerForm({
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div>
-          <FieldLabel>Key (unique identifier) *</FieldLabel>
-          <input style={inp} value={form.key}
-            onChange={(e) => set("key", e.target.value)}
-            placeholder="e.g. home-hero"
-            disabled={!isCreate} // key is immutable after creation
-          />
-          {isCreate && (
-            <p style={{ fontSize: 10, color: "#9b9590", marginTop: 4 }}>
-              Used to fetch banner in storefront: /cms/banners/[key]
-            </p>
+          <FieldLabel>Position *</FieldLabel>
+          {isCreate ? (
+            <select style={{ ...inp, cursor: "pointer" }} value={form.key}
+              onChange={(e) => set("key", e.target.value)}>
+              <option value="">— select position —</option>
+              {POSITIONS.map((p) => (
+                <option key={p.value} value={p.value}>{p.label}</option>
+              ))}
+            </select>
+          ) : (
+            <div style={{ ...inp, color: "#6b6860", background: "#f5f3ef" }}>
+              {POSITIONS.find((p) => p.value === form.key)?.label ?? form.key}
+            </div>
           )}
         </div>
         <div>

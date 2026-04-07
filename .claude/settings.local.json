@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /d/workspace/standalone-website/e-commerce/backend/src/api -type f -name \"route.ts\" -exec grep -l \"GET\\\\|POST\\\\|PUT\\\\|DELETE\" {} \\\\;)",
+      "Bash(python3:*)",
+      "Bash(npm run:*)",
+      "Bash(rm -rf .next)",
+      "Bash(npx next:*)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 240 bash -c 'npm run build 2>&1')",
+      "Bash(NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_e9b929eaa9fed16b7a97662810159ed68d225f2dc3381213eeddc52818e34f70 npx next build)",
+      "Bash(git -C \"D:/workspace/standalone-website/e-commerce/storefront\" log --oneline --diff-filter=M -- \"src/app/[countryCode]/\\(main\\)/products/**\")",
+      "Bash(git -C \"D:/workspace/standalone-website/e-commerce\" log --oneline --diff-filter=M -- \"storefront/src/app/\\\\[countryCode\\\\]/\\\\\\(main\\\\\\)/products/**\")",
+      "Bash(git -C \"D:/workspace/standalone-website/e-commerce\" show --stat HEAD)"
+    ]
+  }
+}

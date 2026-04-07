@@ -1,65 +1,120 @@
 import { getAllPosts } from '@lib/data/blog'
-import BlogCard from '@modules/blog/components/blog-card'
+import { BannerData } from '@lib/data/cms'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
 
-export default async function BlogListTemplate() {
+const FALLBACK_BANNER = {
+  headline: "Stories from the atelier.",
+  text: "Notes on craft, material, and the slow life.",
+  cta_text: "Read more →",
+  cta_link: "/blog",
+  image_url: "https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=80",
+}
+
+export default async function BlogListTemplate({ banner }: { banner?: BannerData | null }) {
   const posts = await getAllPosts()
+  const b = banner ?? FALLBACK_BANNER
 
   if (posts.length === 0) {
     return (
-      <div className="content-container py-24 text-center">
+      <div className="min-h-screen bg-[#fcf9f4] flex items-center justify-center">
         <p className="text-sm text-[#6B6860]">No stories yet. Check back soon.</p>
       </div>
     )
   }
 
-  const [hero, ...rest] = posts
-
   return (
-    <div className="bg-[var(--scandi-bg)] min-h-screen">
-      {/* Page header */}
-      <div className="content-container pt-16 pb-12">
-        <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-3">Journal</p>
-        <h1 className="font-lora text-5xl large:text-6xl text-[#1C1C1A] -tracking-[0.02em]">
-          Stories &amp; ideas
-        </h1>
-      </div>
+    <div className="bg-[#fcf9f4] min-h-screen">
 
-      {/* Hero post — full width */}
-      <div className="content-container mb-16">
-        <LocalizedClientLink href={`/blog/${hero.slug}`} className="group block">
-          <div className="relative overflow-hidden bg-[#E8E4DC] aspect-[16/7]">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-8 large:p-12">
-              <h2 className="font-lora text-3xl large:text-5xl text-white leading-tight mb-3 max-w-2xl group-hover:text-[#F7F4EF]/90 transition-colors">
-                {hero.title}
-              </h2>
-              <p className="text-sm text-white/70">
-                {new Date(hero.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                {hero.author && ` · ${hero.author}`}
-              </p>
+      {/* CMS-controlled journal banner */}
+      <div className="px-8 max-w-screen-2xl mx-auto">
+        <section className="mt-8 rounded-xl overflow-hidden relative aspect-[21/9] medium:aspect-[21/7]">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('${b.image_url}')` }}
+          />
+          {/* Gradient overlay from left */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1c1c19]/55 to-transparent" />
+          {/* Content */}
+          <div className="absolute inset-0 flex items-center px-8 medium:px-16">
+            <div className="max-w-lg space-y-4">
+              <span className="inline-block px-3 py-1 bg-[#d8e6a6] text-[#5c6834] text-xs font-semibold tracking-widest rounded-full uppercase">
+                The Journal
+              </span>
+              <h1 className="font-lora text-3xl medium:text-4xl large:text-5xl text-[#fcf9f4] leading-tight">
+                {b.headline}
+              </h1>
+              {b.text && (
+                <p className="text-[#fcf9f4]/80 text-base leading-relaxed">{b.text}</p>
+              )}
+              {b.cta_text && (
+                <a
+                  href={b.cta_link}
+                  className="inline-flex items-center gap-2 bg-[#6f4627] text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-[#8b5e3c] transition-all"
+                >
+                  {b.cta_text}
+                </a>
+              )}
             </div>
           </div>
-        </LocalizedClientLink>
+        </section>
       </div>
 
-      {/* Remaining posts — grid */}
-      {rest.length > 0 && (
-        <div className="content-container pb-24">
-          <div className="grid grid-cols-1 medium:grid-cols-2 large:grid-cols-3 gap-10 large:gap-14">
-            {rest.map((post) => (
-              <BlogCard
+      {/* Section header */}
+      <div className="px-8 max-w-screen-2xl mx-auto pt-20 pb-12 flex flex-col medium:flex-row justify-between items-start medium:items-end gap-6">
+        <div>
+          <p className="text-xs uppercase tracking-[0.28em] text-[#6f4627]/60 font-semibold mb-3">The Journal</p>
+          <h2 className="font-lora text-4xl medium:text-5xl text-[#1c1c19] leading-tight">
+            Stories from the Grain
+          </h2>
+        </div>
+        <a
+          href="/blog"
+          className="text-[#6f4627] font-medium flex items-center gap-2 pb-1 border-b border-[#6f4627]/20 hover:border-[#6f4627] transition-all text-sm"
+        >
+          Explore the Archive <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      {/* Posts grid */}
+      <div className="px-8 max-w-screen-2xl mx-auto pb-24">
+        <div className="grid grid-cols-1 medium:grid-cols-3 gap-16">
+          {posts.map((post, i) => (
+              <LocalizedClientLink
                 key={post.slug}
-                slug={post.slug}
-                title={post.title}
-                date={post.date}
-                excerpt={post.excerpt}
-                author={post.author ?? ''}
-              />
+                href={`/blog/${post.slug}`}
+                className={`group space-y-6${i === 1 ? ' medium:mt-20' : ''}`}
+              >
+                {/* Image */}
+                <div className="overflow-hidden rounded-2xl bg-[#f0ede8] aspect-[4/5]">
+                  {post.cover_image_url ? (
+                    <img
+                      src={post.cover_image_url}
+                      alt=""
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#e5e2dd]" />
+                  )}
+                </div>
+
+                {/* Meta + title */}
+                <div className="space-y-3">
+                  <p className="text-xs uppercase tracking-widest text-[#83746b]">
+                    {post.author ?? 'The Woodenly'}
+                  </p>
+                  <h3 className="font-lora text-xl italic text-[#1c1c19] leading-snug group-hover:text-[#6f4627] transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="text-[#51443c] text-sm leading-relaxed line-clamp-2">{post.excerpt}</p>
+                  <span className="text-[#6f4627] font-semibold flex items-center gap-1 text-sm group-hover:gap-2 transition-all">
+                    Read story <span aria-hidden="true">→</span>
+                  </span>
+                </div>
+              </LocalizedClientLink>
             ))}
           </div>
         </div>
-      )}
+
     </div>
   )
 }

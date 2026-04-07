@@ -5,7 +5,6 @@ import ProductOnboardingCta from '@modules/products/components/product-onboardin
 import ProductTabs from '@modules/products/components/product-tabs'
 import RelatedProducts from '@modules/products/components/related-products'
 import ProductInfo from '@modules/products/templates/product-info'
-import ProductStory from '@modules/products/components/product-story'
 import ProductReviews from '@modules/products/components/product-reviews'
 import SkeletonRelatedProducts from '@modules/skeletons/templates/skeleton-related-products'
 import { notFound } from 'next/navigation'
@@ -50,9 +49,6 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({ product, region, coun
           </div>
         </div>
       </div>
-
-      {/* ── Product story ─────────────────────────────────────── */}
-      <ProductStory product={product} />
 
       {/* ── Customer reviews ──────────────────────────────────── */}
       <ProductReviews />

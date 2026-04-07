@@ -60,7 +60,7 @@ export async function generateMetadata(
     `${title} category.`
 
   return {
-    title: `${title} | Medusa Store`,
+    title: `${title} | The Woodenly`,
     description,
     alternates: {
       canonical: `${params.category.join('/')}`,

@@ -7,77 +7,84 @@ interface QuietMomentProps {
 }
 
 export function QuietMoment({ products }: QuietMomentProps) {
-  const display = products.slice(0, 3)
-  if (!display.length) return null
+  const featured = products[0]
+  if (!featured) return null
 
   return (
-    <section className="py-20 large:py-28 bg-[var(--scandi-bg)]">
-      {/* Scene image */}
-      <div className="relative h-[55vh] w-full overflow-hidden mb-16">
-        <Image
-          src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1600&q=80"
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-black/20" />
-      </div>
+    <section className="py-20 large:py-28 px-8 bg-[#f0ede8] overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 medium:grid-cols-2 items-center gap-16 large:gap-24">
 
-      {/* Narrative text */}
-      <div className="content-container text-center mb-16">
-        <p className="font-lora italic text-2xl large:text-3xl text-[#1C1C1A] mb-5 max-w-lg mx-auto leading-relaxed">
-          The morning light rests quietly on the table.
-        </p>
-        <p className="text-sm text-[#6B6860] leading-loose max-w-sm mx-auto">
-          Nothing rushes here.<br />
-          The tea cools slowly, and time feels softer.
-        </p>
-      </div>
+          {/* Left: atmospheric image + floating product card */}
+          <div className="relative">
+            <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl aspect-[4/5]">
+              {featured.thumbnail ? (
+                <Image
+                  src={featured.thumbnail}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover object-center"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-[#E8E4DC]" />
+              )}
+            </div>
 
-      {/* Embedded products */}
-      <div className="content-container">
-        <div className="grid grid-cols-1 small:grid-cols-3 gap-8 large:gap-12 mb-12">
-          {display.map((product) => (
-            <LocalizedClientLink
-              key={product.id}
-              href={`/products/${product.handle}`}
-              className="group text-center"
-            >
-              {/* Thumbnail */}
-              <div className="relative aspect-square w-full overflow-hidden bg-[#F0EDE6] mb-5">
-                {product.thumbnail ? (
-                  <Image
-                    src={product.thumbnail}
-                    alt=""
-                    fill
-                    sizes="(max-width: 640px) 100vw, 33vw"
-                    className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.04]"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-[#E8E4DC]" />
-                )}
+            {/* Floating product embed card */}
+            <div className="mt-6 medium:mt-0 medium:absolute medium:-bottom-10 medium:-right-10 bg-[#fcf9f4] p-7 rounded-3xl shadow-xl max-w-[280px] border border-[#d5c3b8]/30">
+              <div className="flex gap-5 items-center">
+                <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-[#f0ede8]">
+                  {featured.thumbnail && (
+                    <Image
+                      src={featured.thumbnail}
+                      alt=""
+                      fill
+                      sizes="80px"
+                      className="object-cover"
+                    />
+                  )}
+                </div>
+                <div className="space-y-1 min-w-0">
+                  <h5 className="font-lora text-lg text-[#1C1C1A] leading-snug">{featured.title}</h5>
+                  <p className="text-sm text-[#6B6860] font-light">Hand-turned. Naturally finished.</p>
+                  <LocalizedClientLink
+                    href={`/products/${featured.handle}`}
+                    className="text-[#6f4627] font-bold text-sm flex items-center gap-1 group pt-1"
+                  >
+                    See details{' '}
+                    <span aria-hidden="true" className="inline-block group-hover:translate-x-1 transition-transform">→</span>
+                  </LocalizedClientLink>
+                </div>
               </div>
-              {/* Title */}
-              <p className="font-lora text-lg text-[#1C1C1A] mb-2 leading-snug">
-                {product.title}
-              </p>
-              {/* Soft CTA */}
-              <span className="text-xs uppercase tracking-[0.1em] text-[#6B6860] group-hover:text-[#1C1C1A] transition-colors border-b border-[#6B6860]/40 pb-px">
-                See details <span aria-hidden="true">→</span>
-              </span>
-            </LocalizedClientLink>
-          ))}
-        </div>
+            </div>
+          </div>
 
-        {/* Section soft link */}
-        <div className="text-center">
-          <LocalizedClientLink
-            href="/store"
-            className="text-xs uppercase tracking-[0.12em] text-[#6B6860] hover:text-[#1C1C1A] transition-colors"
-          >
-            View the moment <span aria-hidden="true">→</span>
-          </LocalizedClientLink>
+          {/* Right: narrative text */}
+          <div className="space-y-10">
+            <div className="space-y-6">
+              <p className="text-xs uppercase tracking-[0.28em] text-[#6f4627]/60 font-semibold">
+                A Quieter Way to Live
+              </p>
+              <h2 className="font-lora text-4xl large:text-5xl text-[#1C1C1A] leading-[1.1] -tracking-[0.01em]">
+                The morning light rests quietly on the table...
+              </h2>
+            </div>
+
+            <blockquote className="text-xl text-[#6B6860] font-light italic leading-relaxed relative pl-8 border-l-2 border-[#6f4627]/20">
+              &ldquo;There is a particular kind of silence that only wood understands. It doesn&apos;t reflect noise; it absorbs it. It waits for the light to find its grain, and in that moment, the room feels settled.&rdquo;
+            </blockquote>
+
+            <div>
+              <LocalizedClientLink
+                href="/store"
+                className="inline-flex items-center bg-[#6f4627] text-white px-10 py-4 rounded-full hover:bg-[#8b5e3c] transition-all active:scale-95 text-lg font-medium"
+              >
+                Discover the Collection
+              </LocalizedClientLink>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

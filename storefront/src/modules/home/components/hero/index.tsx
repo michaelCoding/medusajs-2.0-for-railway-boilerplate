@@ -9,66 +9,52 @@ type HeroConfig = {
 }
 
 const Hero = ({ data }: { data: HeroConfig }) => {
-  return (
-    <section className="w-full">
-      {/* Desktop: two-column */}
-      <div className="hidden medium:grid medium:grid-cols-[55fr_45fr] min-h-[600px] large:min-h-[700px]">
-        {/* Image column */}
-        <div className="relative overflow-hidden">
-          <Image
-            src={data.image.url}
-            alt={data.image.alt}
-            fill
-            sizes="(max-width: 768px) 0vw, 55vw"
-            className="object-cover object-center"
-            priority
-          />
-        </div>
-        {/* Text column */}
-        <div className="flex flex-col justify-center px-12 large:px-20 py-16 bg-[var(--scandi-bg)]">
-          <h1 className="font-lora text-5xl large:text-6xl leading-[1.1] text-[#1C1C1A] mb-8 -tracking-[0.02em]">
-            {data.headline}
-          </h1>
-          <p className="text-base text-[#6B6860] leading-relaxed mb-10 max-w-[340px]">
-            {data.text}
-          </p>
-          <LocalizedClientLink
-            href={data.cta.link}
-            className="inline-flex w-max border border-[#1C1C1A] px-8 py-3 text-sm uppercase tracking-[0.1em] text-[#1C1C1A] hover:bg-[#1C1C1A] hover:text-[#F7F4EF] transition-colors duration-300"
-          >
-            {data.cta.text}
-          </LocalizedClientLink>
-        </div>
-      </div>
+  const dotIdx = data.headline.indexOf('. ')
+  const line1 = dotIdx !== -1 ? data.headline.slice(0, dotIdx + 1) : data.headline
+  const line2 = dotIdx !== -1 ? data.headline.slice(dotIdx + 2) : null
 
-      {/* Mobile: stacked */}
-      <div className="medium:hidden">
-        <div className="relative h-[60vh]">
-          <Image
-            src={data.image.url}
-            alt={data.image.alt}
-            fill
-            sizes="100vw"
-            className="object-cover object-center"
-            priority
-          />
+  return (
+    <div className="px-8 max-w-screen-2xl mx-auto">
+      <section className="mt-8 rounded-xl overflow-hidden relative aspect-[21/9] medium:aspect-[21/7]">
+        {/* Background image */}
+        <Image
+          src={data.image.url}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+          priority
+        />
+        {/* Gradient overlay from left */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1c1c19]/55 to-transparent" />
+
+        {/* Left-aligned content */}
+        <div className="absolute inset-0 flex items-center px-8 medium:px-16">
+          <div className="max-w-lg space-y-6">
+            <h1 className="font-lora text-4xl medium:text-5xl large:text-6xl text-[#fcf9f4] leading-tight -tracking-[0.02em]">
+              {line1}
+              {line2 && (
+                <>
+                  <br />
+                  {line2}
+                </>
+              )}
+            </h1>
+            {data.text && (
+              <p className="text-[#fcf9f4]/85 font-medium text-base medium:text-lg leading-relaxed">
+                {data.text}
+              </p>
+            )}
+            <LocalizedClientLink
+              href={data.cta.link}
+              className="inline-flex items-center gap-3 bg-[#6f4627] text-white px-8 py-4 rounded-full text-base font-semibold hover:bg-[#8b5e3c] transition-all active:scale-95"
+            >
+              {data.cta.text}
+            </LocalizedClientLink>
+          </div>
         </div>
-        <div className="px-6 py-10 bg-[var(--scandi-bg)]">
-          <h1 className="font-lora text-4xl leading-[1.15] text-[#1C1C1A] mb-5 -tracking-[0.02em]">
-            {data.headline}
-          </h1>
-          <p className="text-base text-[#6B6860] leading-relaxed mb-8">
-            {data.text}
-          </p>
-          <LocalizedClientLink
-            href={data.cta.link}
-            className="inline-flex w-max border border-[#1C1C1A] px-6 py-3 text-sm uppercase tracking-[0.1em] text-[#1C1C1A] hover:bg-[#1C1C1A] hover:text-[#F7F4EF] transition-colors duration-300"
-          >
-            {data.cta.text}
-          </LocalizedClientLink>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
   )
 }
 

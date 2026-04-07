@@ -6,8 +6,9 @@ import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment, jsx, jsxs } from 'react/jsx-runtime'
 import { BlogPost } from '@lib/data/blog'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
+import { getAllPosts } from '@lib/data/blog'
+import { InlineProductCard } from '@modules/blog/components/inline-product-card'
 
-// Detect HTML content vs legacy markdown
 function isHtml(content: string) {
   return /^\s*</.test(content)
 }
@@ -19,75 +20,164 @@ async function renderMarkdown(content: string) {
   return toJsxRuntime(hast, { Fragment, jsx: jsx as any, jsxs: jsxs as any })
 }
 
-const articleCls = [
-  "max-w-2xl text-[#6B6860] leading-relaxed",
-  "[&_h1]:font-lora [&_h1]:text-[#1C1C1A] [&_h1]:text-3xl [&_h1]:mb-5 [&_h1]:mt-8 [&_h1]:leading-tight",
-  "[&_h2]:font-lora [&_h2]:text-[#1C1C1A] [&_h2]:text-2xl [&_h2]:mb-4 [&_h2]:mt-7",
-  "[&_h3]:font-lora [&_h3]:text-[#1C1C1A] [&_h3]:text-xl [&_h3]:mb-3 [&_h3]:mt-6",
-  "[&_p]:mb-4",
-  "[&_a]:text-[#C07B5A] [&_a]:underline",
+const bodyCls = [
+  "font-body text-lg leading-relaxed text-[#51443c]",
+  "[&_p]:mb-6",
+  "[&_p:first-of-type]:first-letter:text-6xl [&_p:first-of-type]:first-letter:font-lora [&_p:first-of-type]:first-letter:float-left [&_p:first-of-type]:first-letter:mr-3 [&_p:first-of-type]:first-letter:text-[#6f4627] [&_p:first-of-type]:first-letter:leading-none",
+  "[&_h2]:font-lora [&_h2]:text-[#1c1c19] [&_h2]:text-2xl [&_h2]:mb-4 [&_h2]:mt-8",
+  "[&_h3]:font-lora [&_h3]:text-[#1c1c19] [&_h3]:text-xl [&_h3]:mb-3 [&_h3]:mt-6",
+  "[&_a]:text-[#6f4627] [&_a]:underline",
   "[&_ul]:pl-5 [&_ul]:mb-4 [&_li]:mb-1",
-  "[&_ol]:pl-5 [&_ol]:mb-4",
-  "[&_blockquote]:border-l-2 [&_blockquote]:border-[#C07B5A] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[#8B8780] [&_blockquote]:my-6",
-  "[&_pre]:bg-[#F0EDE6] [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-4",
-  "[&_code]:bg-[#F0EDE6] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:text-[#C07B5A]",
-  "[&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-inherit",
-  "[&_img]:rounded-lg [&_img]:my-6 [&_img]:max-w-full",
-  "[&_video]:rounded-lg [&_video]:my-6 [&_video]:max-w-full [&_video]:w-full",
-  "[&_audio]:w-full [&_audio]:my-4",
-  "[&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-lg [&_iframe]:my-6 [&_iframe]:border-0",
-  "[&_hr]:border-[#E8E4DC] [&_hr]:my-8",
-].join(" ")
+  "[&_blockquote]:border-l-2 [&_blockquote]:border-[#6f4627]/20 [&_blockquote]:pl-8 [&_blockquote]:italic [&_blockquote]:text-[#51443c] [&_blockquote]:my-6 [&_blockquote]:text-xl [&_blockquote]:font-light",
+  "[&_img]:rounded-xl [&_img]:w-full [&_img]:my-10",
+  "[&_hr]:border-[#d5c3b8] [&_hr]:my-8",
+].join(' ')
 
 export default async function BlogDetailTemplate({ post }: { post: BlogPost }) {
+  const allPosts = await getAllPosts()
+  const related = allPosts.filter((p) => p.slug !== post.slug).slice(0, 3)
+
   const html = isHtml(post.content)
   const renderedContent = html ? null : await renderMarkdown(post.content)
 
   return (
-    <div className="bg-[var(--scandi-bg)] min-h-screen">
-      {/* Header */}
-      <div className="content-container pt-12 pb-0">
-        <LocalizedClientLink
-          href="/blog"
-          className="text-xs uppercase tracking-[0.1em] text-[#6B6860] hover:text-[#1C1C1A] transition-colors inline-flex items-center gap-2 mb-10"
-        >
-          ← Back to Journal
-        </LocalizedClientLink>
+    <div className="bg-[#fcf9f4] min-h-screen">
 
-        <div className="max-w-2xl">
-          <p className="text-xs uppercase tracking-[0.1em] text-[#7A9E7E] mb-4">
-            {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            {post.author && ` · ${post.author}`}
-          </p>
-          <h1 className="font-lora text-4xl large:text-5xl text-[#1C1C1A] leading-[1.1] -tracking-[0.02em] mb-12">
-            {post.title}
-          </h1>
-        </div>
-      </div>
-
-      {/* Hero image */}
-      <div className="content-container mb-12">
-        {post.cover_image_url ? (
-          <img
-            src={post.cover_image_url}
-            alt={post.title}
-            className="w-full aspect-[16/7] object-cover rounded-lg"
+      {/* Hero — store-style banner */}
+      <div className="px-8 max-w-screen-2xl mx-auto">
+        <header className="mt-8 rounded-xl overflow-hidden relative aspect-[21/9] medium:aspect-[21/7]">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: post.cover_image_url
+                ? `url('${post.cover_image_url}')`
+                : "url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1600&q=80')",
+            }}
           />
-        ) : (
-          <div className="bg-[#E8E4DC] aspect-[16/7] w-full rounded-lg" />
-        )}
+          {/* Gradient from left */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1c1c19]/60 to-transparent" />
+
+          {/* Left-aligned content */}
+          <div className="absolute inset-0 flex items-center px-8 medium:px-16">
+            <div className="max-w-xl space-y-4">
+              <p className="text-[#fcf9f4]/70 tracking-[0.15em] uppercase text-xs">
+                {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {post.author && ` · ${post.author}`}
+              </p>
+              <h1 className="font-lora text-3xl medium:text-4xl large:text-5xl text-[#fcf9f4] leading-tight">
+                {post.title}
+              </h1>
+            </div>
+          </div>
+        </header>
       </div>
 
-      {/* Article body */}
-      <div className="content-container pb-24">
-        <article className={articleCls}>
-          {html ? (
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
-          ) : (
-            renderedContent
-          )}
-        </article>
-      </div>
+      {/* Content canvas */}
+      <section className="px-8 max-w-screen-2xl mx-auto py-20">
+
+        {/* The Moment: intro quote */}
+        {post.excerpt && (
+          <div className="grid grid-cols-1 medium:grid-cols-12 gap-12 mb-24">
+            <div className="medium:col-span-4 flex flex-col justify-end pb-4">
+              <div className="w-12 h-px bg-[#6f4627] mb-6" />
+              <span className="text-xs text-[#6f4627] tracking-widest uppercase font-semibold">The Moment</span>
+            </div>
+            <div className="medium:col-span-8">
+              <p className="font-lora text-3xl medium:text-4xl text-[#1c1c19] leading-snug italic">
+                &ldquo;{post.excerpt}&rdquo;
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Main content area */}
+        <div className="grid grid-cols-1 large:grid-cols-12 gap-16 items-start">
+
+          {/* Sidebar — sticky author card */}
+          <aside className="large:col-span-3 space-y-10 large:sticky large:top-28">
+            <div className="p-8 bg-[#f6f3ee] rounded-xl">
+              <p className="text-xs uppercase tracking-wider text-[#83746b] mb-2">Written by</p>
+              <p className="font-lora text-lg text-[#6f4627] mb-6">{post.author ?? 'The Woodenly'}</p>
+              <p className="text-xs uppercase tracking-wider text-[#83746b] mb-2">Published</p>
+              <p className="font-lora text-lg text-[#6f4627]">
+                {new Date(post.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </p>
+            </div>
+
+            <LocalizedClientLink
+              href="/blog"
+              className="text-xs uppercase tracking-[0.1em] text-[#6B6860] hover:text-[#1c1c19] transition-colors inline-flex items-center gap-2"
+            >
+              ← Back to Journal
+            </LocalizedClientLink>
+          </aside>
+
+          {/* Article body */}
+          <div className="large:col-span-9 space-y-10">
+            <div className="columns-1 medium:columns-2 gap-10">
+              {html ? (
+                <div
+                  className={bodyCls}
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                />
+              ) : (
+                <div className={bodyCls}>{renderedContent}</div>
+              )}
+            </div>
+
+            {/* The Object: featured product card */}
+            {post.featured_product_handle && (
+              <div className="mt-16 pt-16 bg-[#f6f3ee] -mx-6 medium:-mx-12 px-6 medium:px-12 pb-16 rounded-t-[3rem]">
+                <div className="max-w-3xl mx-auto">
+                  <div className="flex items-center gap-4 mb-10">
+                    <span className="text-xs tracking-widest text-[#6f4627] uppercase font-semibold">The Object</span>
+                    <div className="flex-grow h-px bg-[#d5c3b8]/30" />
+                  </div>
+                  <InlineProductCard handle={post.featured_product_handle} />
+                </div>
+              </div>
+            )}
+          </div>
+
+        </div>
+      </section>
+
+      {/* Related Stories */}
+      {related.length > 0 && (
+        <section className="bg-[#fcf9f4] py-20 px-6 medium:px-12 border-t border-[#d5c3b8]/10">
+          <div className="px-8 max-w-screen-2xl mx-auto">
+            <h2 className="font-lora text-4xl text-[#1c1c19] mb-16">Related Stories</h2>
+            <div className="grid grid-cols-1 medium:grid-cols-3 gap-12">
+              {related.map((story) => (
+                <LocalizedClientLink
+                  key={story.slug}
+                  href={`/blog/${story.slug}`}
+                  className="group cursor-pointer"
+                >
+                  <div className="aspect-[4/5] overflow-hidden rounded-xl mb-6 bg-[#f0ede8]">
+                    {story.cover_image_url ? (
+                      <img
+                        src={story.cover_image_url}
+                        alt=""
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#e5e2dd]" />
+                    )}
+                  </div>
+                  <p className="text-xs uppercase tracking-widest text-[#83746b] mb-2">
+                    {story.author ?? 'The Woodenly'}
+                  </p>
+                  <h4 className="font-lora text-xl text-[#1c1c19] group-hover:text-[#6f4627] transition-colors">
+                    {story.title}
+                  </h4>
+                </LocalizedClientLink>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
     </div>
   )
 }

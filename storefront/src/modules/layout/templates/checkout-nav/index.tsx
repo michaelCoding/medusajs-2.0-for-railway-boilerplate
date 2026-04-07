@@ -3,11 +3,11 @@ import { Button } from '@modules/common/components/button'
 import { Container } from '@modules/common/components/container'
 import LocalizedClientLink from '@modules/common/components/localized-client-link'
 import { Text } from '@modules/common/components/text'
-import { ArrowLeftIcon, SolaceLogo } from '@modules/common/icons'
+import { ArrowLeftIcon } from '@modules/common/icons'
 
 export default function CheckoutNav() {
   return (
-    <nav className="h-full border-b bg-primary">
+    <nav className="h-full border-b border-[#E8E4DC] bg-[#fcf9f4]">
       <Container className="flex h-full items-center justify-between !py-3 small:!py-4">
         <Box className="small:flex-1">
           <Button variant="tonal" asChild className="w-max">
@@ -26,8 +26,8 @@ export default function CheckoutNav() {
           </Button>
         </Box>
         <Box className="flex items-center justify-end small:flex-1 small:justify-center">
-          <LocalizedClientLink href="/">
-            <SolaceLogo className="h-6 small:h-7" />
+          <LocalizedClientLink href="/" className="font-lora text-xl text-[#6f4627] italic">
+            The Woodenly
           </LocalizedClientLink>
         </Box>
         <div className="hidden flex-1 basis-0 small:flex" />

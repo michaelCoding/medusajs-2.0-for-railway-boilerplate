@@ -31,6 +31,30 @@ export async function getBanner(key: string): Promise<BannerData | null> {
   }
 }
 
+export type VideoData = {
+  id: string
+  key: string
+  url: string
+  title: string
+  text: string
+  tag: string
+  duration: string
+  poster_url: string
+}
+
+export async function getVideos(key: string): Promise<VideoData[]> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/cms/videos/${key}`, {
+      next: { tags: [`cms-video-${key}`] },
+    })
+    if (!res.ok) return []
+    const { videos } = await res.json()
+    return videos ?? []
+  } catch {
+    return []
+  }
+}
+
 export async function getStaticPage(slug: string): Promise<StaticPageData | null> {
   try {
     const res = await fetch(`${BACKEND_URL}/cms/pages/${slug}`, {

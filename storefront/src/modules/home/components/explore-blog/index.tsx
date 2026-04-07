@@ -10,23 +10,23 @@ export function ExploreBlog({ posts }: { posts: Post[] }) {
       {/* Header */}
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-3">Stories</p>
+          <p className="text-xs uppercase tracking-[0.14em] text-[#6B6860] mb-3">The Journal</p>
           <h2 className="font-lora text-4xl large:text-5xl text-[#1C1C1A] -tracking-[0.02em]">
-            Stories from Woodenly
+            Stories from the Grain
           </h2>
         </div>
         <LocalizedClientLink
           href="/blog"
           className="hidden medium:inline-flex text-xs uppercase tracking-[0.1em] text-[#6B6860] hover:text-[#1C1C1A] transition-colors border-b border-[#6B6860] pb-px"
         >
-          View all →
+          Explore the Archive →
         </LocalizedClientLink>
       </div>
 
       {/* Cards grid */}
       <div className="grid grid-cols-1 medium:grid-cols-3 gap-8 large:gap-12">
         {posts.map((post, i) => (
-          <ScrollReveal key={post.slug} delay={i * 100}>
+          <ScrollReveal key={post.slug} delay={i * 100} className={i === 1 ? 'medium:mt-24' : ''}>
             <BlogCard
               slug={post.slug}
               title={post.title}
@@ -44,7 +44,7 @@ export function ExploreBlog({ posts }: { posts: Post[] }) {
           href="/blog"
           className="text-xs uppercase tracking-[0.1em] text-[#6B6860] border-b border-[#6B6860] pb-px"
         >
-          View all stories →
+          Explore the Archive →
         </LocalizedClientLink>
       </div>
     </section>

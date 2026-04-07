@@ -9,9 +9,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-12 medium:grid-cols-4">
           {/* Brand blurb */}
           <div className="medium:col-span-1">
-            <p className="font-lora text-xl mb-4">Solace</p>
+            <p className="font-lora text-xl mb-4">The Woodenly</p>
             <p className="text-sm text-[#F7F4EF]/60 leading-relaxed max-w-[220px]">
-              Thoughtfully made objects for a slower, more considered life.
+              Handcrafting heirloom-quality wooden wares for the intentional home.
             </p>
           </div>
 
@@ -20,9 +20,10 @@ export default function Footer() {
             <p className="text-xs uppercase tracking-[0.1em] text-[#F7F4EF]/40 mb-6">Shop</p>
             <ul className="flex flex-col gap-3">
               {[
-                { href: '/store', label: 'All Products' },
+                { href: '/store', label: 'All Objects' },
                 { href: '/categories', label: 'Categories' },
                 { href: '/collections', label: 'Collections' },
+                { href: '/shipping-returns', label: 'Shipping & Returns' },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <LocalizedClientLink
@@ -84,7 +85,7 @@ export default function Footer() {
       <div className="border-t border-[#F7F4EF]/10">
         <div className="content-container py-5 flex flex-col medium:flex-row items-start medium:items-center justify-between gap-3">
           <p className="text-xs text-[#F7F4EF]/30">
-            © {new Date().getFullYear()} Solace. All rights reserved.
+            © {new Date().getFullYear()} The Woodenly. Handcrafted for the Slow Life.
           </p>
           <div className="flex gap-6">
             {[

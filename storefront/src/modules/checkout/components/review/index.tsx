@@ -1,7 +1,5 @@
 "use client"
 
-import { Heading, Text, clx } from "@medusajs/ui"
-
 import PaymentButton from "../payment-button"
 import { useSearchParams } from "next/navigation"
 
@@ -19,34 +17,36 @@ const Review = ({ cart }: { cart: any }) => {
     (cart.payment_collection || paidByGiftcard)
 
   return (
-    <div className="bg-primary">
-      <div className="flex flex-row items-center justify-between mb-6">
-        <Heading
-          level="h2"
-          className={clx(
-            "flex flex-row text-3xl-regular gap-x-2 items-baseline",
-            {
-              "opacity-50 pointer-events-none select-none": !isOpen,
-            }
-          )}
+    <div>
+      {/* ── Section header ── */}
+      <div className="flex items-center gap-3 mb-6">
+        <div
+          className={[
+            "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-semibold",
+            isOpen ? "bg-[#6f4627] text-white" : "bg-[#e8e4dc] text-[#9b9590]",
+          ].join(" ")}
         >
-          Review
-        </Heading>
+          04
+        </div>
+        <h2
+          className={[
+            "font-lora text-[20px] leading-none transition-colors",
+            isOpen ? "text-[#1c1c1a]" : "text-[#9b9590]",
+          ].join(" ")}
+        >
+          Review &amp; Place Order
+        </h2>
       </div>
+
       {isOpen && previousStepsCompleted && (
-        <>
-          <div className="flex items-start gap-x-1 w-full mb-6">
-            <div className="w-full">
-              <Text className="txt-medium-plus text-basic-primary mb-1">
-                By clicking the Place Order button, you confirm that you have
-                read, understand and accept our Terms of Use, Terms of Sale and
-                Returns Policy and acknowledge that you have read Medusa
-                Store&apos;s Privacy Policy.
-              </Text>
-            </div>
-          </div>
+        <div className="pb-8">
+          <p className="text-xs text-[#9b9590] leading-relaxed mb-6 max-w-md">
+            By placing your order, you confirm that you have read, understand and
+            accept our Terms of Use, Terms of Sale and Returns Policy, and
+            acknowledge that you have read The Woodenly&apos;s Privacy Policy.
+          </p>
           <PaymentButton cart={cart} data-testid="submit-order-button" />
-        </>
+        </div>
       )}
     </div>
   )

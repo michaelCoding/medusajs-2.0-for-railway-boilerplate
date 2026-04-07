@@ -1,6 +1,5 @@
 "use client"
 
-import { Button } from "@medusajs/ui"
 import { OnApproveActions, OnApproveData } from "@paypal/paypal-js"
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
@@ -16,6 +15,37 @@ type PaymentButtonProps = {
   "data-testid": string
 }
 
+const PlaceOrderButton = ({
+  disabled,
+  loading,
+  onClick,
+  dataTestId,
+}: {
+  disabled: boolean
+  loading: boolean
+  onClick?: () => void
+  dataTestId?: string
+}) => (
+  <button
+    disabled={disabled || loading}
+    onClick={onClick}
+    type={onClick ? "button" : "submit"}
+    data-testid={dataTestId}
+    className="w-full py-4 bg-[#6f4627] text-white text-sm font-semibold rounded-xl hover:bg-[#5c3820] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+  >
+    {loading ? (
+      <Spinner />
+    ) : (
+      <>
+        Place order
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+          <path d="M2 6.5h9M8 3l3.5 3.5L8 10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </>
+    )}
+  </button>
+)
+
 const PaymentButton: React.FC<PaymentButtonProps> = ({
   cart,
   "data-testid": dataTestId,
@@ -26,14 +56,6 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     !cart.billing_address ||
     !cart.email ||
     (cart.shipping_methods?.length ?? 0) < 1
-
-  // TODO: Add this once gift cards are implemented
-  // const paidByGiftcard =
-  //   cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
-
-  // if (paidByGiftcard) {
-  //   return <GiftCardPaymentButton />
-  // }
 
   const paymentSession = cart.payment_collection?.payment_sessions?.[0]
 
@@ -59,7 +81,9 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
         />
       )
     default:
-      return <Button disabled>Select a payment method</Button>
+      return (
+        <PlaceOrderButton disabled loading={false} dataTestId={dataTestId} />
+      )
   }
 }
 
@@ -72,13 +96,12 @@ const GiftCardPaymentButton = () => {
   }
 
   return (
-    <Button
+    <PlaceOrderButton
+      disabled={false}
+      loading={submitting}
       onClick={handleOrder}
-      isLoading={submitting}
-      data-testid="submit-order-button"
-    >
-      Place order
-    </Button>
+      dataTestId="submit-order-button"
+    />
   )
 }
 
@@ -96,12 +119,8 @@ const StripePaymentButton = ({
 
   const onPaymentCompleted = async () => {
     await placeOrder()
-      .catch((err) => {
-        setErrorMessage(err.message)
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
+      .catch((err) => setErrorMessage(err.message))
+      .finally(() => setSubmitting(false))
   }
 
   const stripe = useStripe()
@@ -111,8 +130,6 @@ const StripePaymentButton = ({
   const session = cart.payment_collection?.payment_sessions?.find(
     (s) => s.status === "pending"
   )
-
-  const disabled = !stripe || !elements ? true : false
 
   const handlePayment = async () => {
     setSubmitting(true)
@@ -147,44 +164,33 @@ const StripePaymentButton = ({
       .then(({ error, paymentIntent }) => {
         if (error) {
           const pi = error.payment_intent
-
           if (
             (pi && pi.status === "requires_capture") ||
             (pi && pi.status === "succeeded")
           ) {
             onPaymentCompleted()
           }
-
           setErrorMessage(error.message || null)
           return
         }
-
         if (
           (paymentIntent && paymentIntent.status === "requires_capture") ||
           paymentIntent.status === "succeeded"
         ) {
           return onPaymentCompleted()
         }
-
-        return
       })
   }
 
   return (
     <>
-      <Button
-        disabled={disabled || notReady}
+      <PlaceOrderButton
+        disabled={(!stripe || !elements) || notReady}
+        loading={submitting}
         onClick={handlePayment}
-        size="large"
-        isLoading={submitting}
-        data-testid={dataTestId}
-      >
-        Place order
-      </Button>
-      <ErrorMessage
-        error={errorMessage}
-        data-testid="stripe-payment-error-message"
+        dataTestId={dataTestId}
       />
+      <ErrorMessage error={errorMessage} data-testid="stripe-payment-error-message" />
     </>
   )
 }
@@ -203,12 +209,8 @@ const PayPalPaymentButton = ({
 
   const onPaymentCompleted = async () => {
     await placeOrder()
-      .catch((err) => {
-        setErrorMessage(err.message)
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
+      .catch((err) => setErrorMessage(err.message))
+      .finally(() => setSubmitting(false))
   }
 
   const session = cart.payment_collection?.payment_sessions?.find(
@@ -250,50 +252,42 @@ const PayPalPaymentButton = ({
           disabled={notReady || submitting || isPending}
           data-testid={dataTestId}
         />
-        <ErrorMessage
-          error={errorMessage}
-          data-testid="paypal-payment-error-message"
-        />
+        <ErrorMessage error={errorMessage} data-testid="paypal-payment-error-message" />
       </>
     )
   }
 }
 
-const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
+const ManualTestPaymentButton = ({
+  notReady,
+  "data-testid": dataTestId,
+}: {
+  notReady: boolean
+  "data-testid"?: string
+}) => {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const onPaymentCompleted = async () => {
     await placeOrder()
-      .catch((err) => {
-        setErrorMessage(err.message)
-      })
-      .finally(() => {
-        setSubmitting(false)
-      })
+      .catch((err) => setErrorMessage(err.message))
+      .finally(() => setSubmitting(false))
   }
 
   const handlePayment = () => {
     setSubmitting(true)
-
     onPaymentCompleted()
   }
 
   return (
     <>
-      <Button
+      <PlaceOrderButton
         disabled={notReady}
-        isLoading={submitting}
+        loading={submitting}
         onClick={handlePayment}
-        size="large"
-        data-testid="submit-order-button"
-      >
-        Place order
-      </Button>
-      <ErrorMessage
-        error={errorMessage}
-        data-testid="manual-payment-error-message"
+        dataTestId={dataTestId ?? "submit-order-button"}
       />
+      <ErrorMessage error={errorMessage} data-testid="manual-payment-error-message" />
     </>
   )
 }

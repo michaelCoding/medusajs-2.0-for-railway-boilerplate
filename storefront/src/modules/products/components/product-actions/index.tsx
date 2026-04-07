@@ -4,6 +4,7 @@ import { isEqual } from "lodash"
 import { useParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 
+import { useRouter } from "next/navigation"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import OptionSelect from "@modules/products/components/product-actions/option-select"
 import MobileActions from "./mobile-actions"
@@ -32,7 +33,9 @@ export default function ProductActions({
 }: ProductActionsProps) {
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const [isBuying, setIsBuying] = useState(false)
   const countryCode = useParams().countryCode as string
+  const router = useRouter()
 
   useEffect(() => {
     if (product.variants?.length === 1) {
@@ -66,11 +69,25 @@ export default function ProductActions({
   const handleAddToCart = async () => {
     if (!selectedVariant?.id) return
     setIsAdding(true)
-    await addToCart({ variantId: selectedVariant.id, quantity: 1, countryCode })
-    setIsAdding(false)
+    try {
+      await addToCart({ variantId: selectedVariant.id, quantity: 1, countryCode })
+    } finally {
+      setIsAdding(false)
+    }
   }
 
-  const ctaDisabled = !inStock || !selectedVariant || !!disabled || isAdding
+  const handleBuyNow = async () => {
+    if (!selectedVariant?.id) return
+    setIsBuying(true)
+    try {
+      await addToCart({ variantId: selectedVariant.id, quantity: 1, countryCode })
+      router.push(`/${countryCode}/checkout?step=address`)
+    } catch {
+      setIsBuying(false)
+    }
+  }
+
+  const ctaDisabled = !inStock || !selectedVariant || !!disabled || isAdding || isBuying
 
   return (
     <>
@@ -92,7 +109,9 @@ export default function ProductActions({
                 current={options[option.title ?? ""]}
                 updateOption={setOptionValue}
                 title={option.title ?? ""}
-                disabled={!!disabled || isAdding}
+                disabled={!!disabled || isAdding || isBuying}
+                variants={product.variants ?? []}
+                selectedOptions={options}
               />
             ))}
           </div>
@@ -100,11 +119,28 @@ export default function ProductActions({
 
         {/* CTA Buttons */}
         <div className="flex flex-col gap-3 pt-4">
+          {/* Buy Now — add to cart then go to checkout */}
+          <button
+            onClick={handleBuyNow}
+            disabled={ctaDisabled}
+            data-testid="buy-now-button"
+            className="w-full py-4 bg-[#6f4627] text-white rounded-md font-semibold text-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isBuying
+              ? "Redirecting…"
+              : !selectedVariant
+              ? "Select variant"
+              : !inStock
+              ? "Out of stock"
+              : "Buy Now"}
+          </button>
+
+          {/* Add to Cart — stays on page */}
           <button
             onClick={handleAddToCart}
             disabled={ctaDisabled}
             data-testid="add-product-button"
-            className="w-full py-4 bg-[#6f4627] text-white rounded-md font-semibold text-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-4 border-2 border-[#6f4627] text-[#6f4627] rounded-md font-semibold text-lg hover:bg-[#6f4627]/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isAdding
               ? "Adding…"
@@ -112,14 +148,7 @@ export default function ProductActions({
               ? "Select variant"
               : !inStock
               ? "Out of stock"
-              : "Buy Now"}
-          </button>
-          <button
-            onClick={handleAddToCart}
-            disabled={ctaDisabled}
-            className="w-full py-4 border-2 border-[#6f4627] text-[#6f4627] rounded-md font-semibold text-lg hover:bg-[#6f4627]/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Add to Cart
+              : "Add to Cart"}
           </button>
         </div>
       </div>

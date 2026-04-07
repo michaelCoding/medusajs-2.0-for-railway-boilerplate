@@ -15,7 +15,7 @@ export default function NavMobileMenu({
     <>
       {/* Hamburger trigger */}
       <button
-        className="medium:hidden flex flex-col gap-1.5 p-1"
+        className="medium:hidden flex flex-col gap-1.5 p-2"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
       >
@@ -26,7 +26,7 @@ export default function NavMobileMenu({
 
       {/* Fullscreen overlay */}
       {open && (
-        <div className="fixed inset-0 z-[60] bg-[var(--scandi-bg)] flex flex-col p-8">
+        <div className="fixed inset-0 z-[60] bg-[#fcf9f4] flex flex-col p-8">
           <button
             className="self-end text-[#1C1C1A] text-2xl mb-12"
             onClick={() => setOpen(false)}
@@ -35,29 +35,26 @@ export default function NavMobileMenu({
             ✕
           </button>
           <nav className="flex flex-col gap-8">
-            {collections.slice(0, 4).map((c) => (
-              <LocalizedClientLink
-                key={c.id}
-                href={`/collections/${c.handle}`}
-                className="font-lora text-3xl text-[#1C1C1A]"
-                onClick={() => setOpen(false)}
-              >
-                {c.title}
-              </LocalizedClientLink>
-            ))}
             <LocalizedClientLink
-              href="/blog"
+              href="/"
               className="font-lora text-3xl text-[#1C1C1A]"
               onClick={() => setOpen(false)}
             >
-              Journal
+              Home
             </LocalizedClientLink>
             <LocalizedClientLink
               href="/store"
               className="font-lora text-3xl text-[#1C1C1A]"
               onClick={() => setOpen(false)}
             >
-              Shop All
+              Store
+            </LocalizedClientLink>
+            <LocalizedClientLink
+              href="/blog"
+              className="font-lora text-3xl text-[#1C1C1A]"
+              onClick={() => setOpen(false)}
+            >
+              Journal
             </LocalizedClientLink>
           </nav>
         </div>

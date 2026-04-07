@@ -59,7 +59,7 @@ export async function generateMetadata(
   }
 
   const metadata = {
-    title: `${collection.title} | Medusa Store`,
+    title: `${collection.title} | The Woodenly`,
     description: `${collection.title} collection`,
   } as Metadata
 
