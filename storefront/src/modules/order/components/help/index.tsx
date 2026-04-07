@@ -1,22 +1,24 @@
-import { Heading } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import React from "react"
 
 const Help = () => {
   return (
-    <div className="mt-6">
-      <Heading className="text-base-semi">Need help?</Heading>
-      <div className="text-base-regular my-2">
-        <ul className="gap-y-2 flex flex-col">
-          <li>
-            <LocalizedClientLink href="/contact">Contact</LocalizedClientLink>
-          </li>
-          <li>
-            <LocalizedClientLink href="/contact">
-              Returns & Exchanges
-            </LocalizedClientLink>
-          </li>
-        </ul>
+    <div className="font-body">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--scandi-fg-muted,#6B6860)] mb-3">
+        Need help from our studio?
+      </p>
+      <div className="flex gap-6 text-sm">
+        <LocalizedClientLink
+          href="/contact"
+          className="text-[var(--scandi-fg,#1C1C1A)] underline underline-offset-4 decoration-[var(--scandi-border)] hover:decoration-[var(--scandi-fg)] transition-colors"
+        >
+          Contact us
+        </LocalizedClientLink>
+        <LocalizedClientLink
+          href="/shipping-returns"
+          className="text-[var(--scandi-fg,#1C1C1A)] underline underline-offset-4 decoration-[var(--scandi-border)] hover:decoration-[var(--scandi-fg)] transition-colors"
+        >
+          Shipping &amp; Returns
+        </LocalizedClientLink>
       </div>
     </div>
   )

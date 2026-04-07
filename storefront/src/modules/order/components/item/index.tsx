@@ -1,5 +1,4 @@
 import { HttpTypes } from "@medusajs/types"
-import { Table, Text } from "@medusajs/ui"
 
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
@@ -12,38 +11,45 @@ type ItemProps = {
 
 const Item = ({ item }: ItemProps) => {
   return (
-    <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
-        <div className="flex w-16">
-          <Thumbnail thumbnail={item.thumbnail} size="square" />
-        </div>
-      </Table.Cell>
+    <div
+      className="flex items-start gap-4 py-5"
+      data-testid="product-row"
+    >
+      {/* Thumbnail */}
+      <div className="w-[64px] h-[64px] shrink-0 rounded-sm overflow-hidden bg-[var(--scandi-bg-card,#F0EDE6)]">
+        <Thumbnail thumbnail={item.thumbnail} size="square" />
+      </div>
 
-      <Table.Cell className="text-left">
-        <Text
-          className="txt-medium-plus text-ui-fg-base"
+      {/* Name + variant */}
+      <div className="flex-1 min-w-0 pt-0.5">
+        <p
+          className="font-body text-sm font-medium text-[var(--scandi-fg,#1C1C1A)] leading-snug"
           data-testid="product-name"
         >
           {item.title}
-        </Text>
+        </p>
         {item.variant && (
-          <LineItemOptions variant={item.variant} data-testid="product-variant" />
+          <div className="mt-0.5 text-xs text-[var(--scandi-fg-muted,#6B6860)]">
+            <LineItemOptions
+              variant={item.variant}
+              data-testid="product-variant"
+            />
+          </div>
         )}
-      </Table.Cell>
+      </div>
 
-      <Table.Cell className="!pr-0">
-        <span className="!pr-0 flex flex-col items-end h-full justify-center">
-          <span className="flex gap-x-1 ">
-            <Text className="text-ui-fg-muted">
-              <span data-testid="product-quantity">{item.quantity}</span>x{" "}
-            </Text>
-            <LineItemUnitPrice item={item} style="tight" />
-          </span>
-
+      {/* Qty × price + line total */}
+      <div className="shrink-0 text-right font-body pt-0.5">
+        <div className="text-xs text-[var(--scandi-fg-muted,#6B6860)] flex items-center gap-1 justify-end">
+          <span data-testid="product-quantity">{item.quantity}</span>
+          <span>×</span>
+          <LineItemUnitPrice item={item} style="tight" />
+        </div>
+        <div className="text-sm font-semibold text-[var(--scandi-fg,#1C1C1A)] mt-0.5">
           <LineItemPrice item={item} style="tight" />
-        </span>
-      </Table.Cell>
-    </Table.Row>
+        </div>
+      </div>
+    </div>
   )
 }
 
